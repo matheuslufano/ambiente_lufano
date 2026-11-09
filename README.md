@@ -16,6 +16,18 @@ O dashboard é a rota `/`. Os painéis são trocados dentro da aplicação. O ob
 
 A primeira coluna contém três seções: **Objetivo** (brasão, instituição, concurso, cargo, banca e salário), **Matérias** (grupos expansíveis) e **Atalhos de estudo** no rodapé. O lápis abre o modal completo do objetivo. A data da prova continua editável no modal. O brasão dourado de PC-TO da imagem fornecida aparece como alternativa local quando nenhum resultado da API foi escolhido; não é apresentado como download validado de uma fonte externa.
 
+## Marcadores dos cadernos
+
+Antes de excluir uma folha, o modal informa seu título e número e oferece **Cancelar** e **Excluir folha**. Fechar o modal ou pressionar Escape cancela sem alterar as anotações; a animação só começa após confirmar.
+
+Na barra de ferramentas, **Cadernos**, **Flashcards** e **Pet** são botões independentes, identificados por livro, cartões e pata. Cadernos abre a segunda coluna diretamente; Flashcards e Pet abrem a terceira coluna. O Pet mantém seu estado ao alternar as ferramentas e não possui mais um botão de abertura dentro da terceira coluna.
+
+Cada folha de anotações possui uma lixeira no canto superior direito. Ao excluir, uma folha pautada fica visível por baixo, enquanto a folha removida se solta, dobra e se transforma em uma bolinha de papel com facetas e sombras. A bolinha cai para fora do caderno e desaparece; só então o conteúdo e o título são removidos, as folhas seguintes renumeradas e o sumário atualizado. `NotebookPageRemoval.tsx` e seu CSS Module concentram a bolinha vetorial e a queda. A navegação fica bloqueada durante esse efeito, que é reduzido para quem prefere menos movimento. O sumário é fixo e não pode ser excluído. Folhas em branco só entram no sumário após editar seu título ou conteúdo. A exclusão é salva automaticamente e não possui desfazer.
+
+As folhas ficam acima dos marcadores na ordem de camadas, cobrindo qualquer parte que entre na área do papel. As pontas externas continuam visíveis e clicáveis, inclusive durante a expansão dos nomes.
+
+O caderno aberto na segunda coluna tem um marcador vermelho do sumário à esquerda e uma aba colorida por matéria à direita. As abas ficam presas à borda externa das folhas, sem área de rolagem, e se expandem para fora da coluna ao passar o mouse ou receber foco pelo teclado. A largura expandida acompanha o nome completo do caderno, em uma linha, com espaço para a ponta da seta. `NotebooksPanel.module.css` concentra os estilos dos marcadores; `.centerToolPage`, em `App.module.css`, permite a sobreposição sobre as colunas vizinhas. As transições respeitam a preferência por movimento reduzido.
+
 ## Modal de configuração do objetivo
 
 **Seu próximo objetivo** é uma janela ampla com menu lateral menor e área de configuração maior. O menu contém **Meu edital → Dados do objetivo / Grupos e matérias** e **Configuração → Perfil / Aparência / Seu ritmo**. Em telas pequenas, o menu vira uma faixa horizontal com rolagem e os campos ficam em uma coluna.

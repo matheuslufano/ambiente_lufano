@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Layers,
@@ -22,15 +23,102 @@ export default function FlashcardsPanel() {
   const [flipped, setFlipped] = useState(false);
   const [create, setCreate] = useState(false);
   const [dueOnly, setDueOnly] = useState(false);
-  const cards = flashcards.filter((c) => !dueOnly || c.due <= Date.now());
+  const [selectedSubject, setSelectedSubject] = useState("all");
+  const [subjectsOpen, setSubjectsOpen] = useState(false);
+  const subjectCards = flashcards.filter(
+    (card) => selectedSubject === "all" || card.subjectId === selectedSubject,
+  );
+  const cards = subjectCards.filter(
+    (card) => !dueOnly || card.due <= Date.now(),
+  );
   const card = cards[index % Math.max(1, cards.length)];
   return (
-    <div id="flashcards-tool">
+    <div id="flashcards-tool" className={styles.flashcardsWorkspace}>
       <div className="tool-eyebrow">
         <Layers size={13} /> LEMBRAR É PRATICAR
       </div>
-      <h2 className="tool-title">Um cartão por vez.</h2>
-      <p className="tool-description">Revise hoje. Lembre amanhã.</p>
+      <h2 className={`tool-title ${styles.flashcardsTitle}`}>
+        Um cartão por vez.
+      </h2>
+      <p className={`tool-description ${styles.flashcardsDescription}`}>
+        Revise hoje. Lembre amanhã.
+      </p>
+      <section
+        id="flashcards-subject-filter"
+        className={styles.flashcardSubjects}
+        aria-label="Selecionar matéria dos flashcards"
+      >
+        <div className={styles.flashcardSubjectsHeading}>
+          <strong>Matérias</strong>
+          <span>{subjectCards.length} cartões</span>
+        </div>
+        <button
+          id="flashcards-subject-trigger"
+          className={styles.flashcardSubjectTrigger}
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={subjectsOpen}
+          aria-controls="flashcards-subject-list"
+          onClick={() => setSubjectsOpen((open) => !open)}
+        >
+          <span>
+            {selectedSubject === "all"
+              ? "Todas as matérias"
+              : subjects.find((subject) => subject.id === selectedSubject)
+                  ?.name || "Selecione uma matéria"}
+          </span>
+          <ChevronDown size={15} />
+        </button>
+        {subjectsOpen && (
+          <div
+            id="flashcards-subject-list"
+            className={styles.flashcardSubjectList}
+            role="group"
+            aria-label="Matérias disponíveis"
+          >
+            <button
+              id="flashcards-subject-all"
+              type="button"
+              className={styles.flashcardSubjectOption}
+              data-selected={selectedSubject === "all"}
+              aria-pressed={selectedSubject === "all"}
+              onClick={() => {
+                setSelectedSubject("all");
+                setIndex(0);
+                setFlipped(false);
+                setSubjectsOpen(false);
+              }}
+            >
+              <span>Todas as matérias</span>
+              <small>{flashcards.length}</small>
+            </button>
+            {subjects.map((subject) => {
+              const count = flashcards.filter(
+                (card) => card.subjectId === subject.id,
+              ).length;
+              return (
+                <button
+                  id={`flashcards-subject-${subject.id}`}
+                  key={subject.id}
+                  type="button"
+                  className={styles.flashcardSubjectOption}
+                  data-selected={selectedSubject === subject.id}
+                  aria-pressed={selectedSubject === subject.id}
+                  onClick={() => {
+                    setSelectedSubject(subject.id);
+                    setIndex(0);
+                    setFlipped(false);
+                    setSubjectsOpen(false);
+                  }}
+                >
+                  <span>{subject.name}</span>
+                  <small>{count}</small>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
       <div className={styles.flashcardControls}>
         <label>
           <input

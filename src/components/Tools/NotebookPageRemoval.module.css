@@ -1,0 +1,20 @@
+.paperBallAnchor {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  top: 50%;
+  width: clamp(64px, 23%, 100px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.paperBall {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(5px 10px 7px #32291c45);
+}
+.paperBall svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

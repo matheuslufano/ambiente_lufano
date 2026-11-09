@@ -4,6 +4,9 @@
   flex-direction: column;
   overflow: hidden;
 }
+.toolExpanded {
+  padding: 14px;
+}
 .topLine {
   display: flex;
   align-items: center;

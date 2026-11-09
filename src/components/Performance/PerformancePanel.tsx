@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import {
-  PawPrint,
   X,
   ChartNoAxesCombined,
   ChartBar,
@@ -38,23 +37,27 @@ export default function PerformancePanel({
 }) {
   const { subjects } = useStudyStore();
   const [tab, setTab] = useState<Tab>("time");
-  const [petOpen, setPetOpen] = useState(false);
+  const petOpen = tool === "pet";
   const [petVisited, setPetVisited] = useState(false);
   const [subject, setSubject] = useState("");
   const [chartsMounted, setChartsMounted] = useState(true);
-  const [visited, setVisited] = useState<Exclude<Tool, null>[]>([]);
+  const [visited, setVisited] = useState<(keyof typeof tools)[]>([]);
   const rewardError = useStudyRewards();
   useEffect(() => {
-    if (tool) {
-      setPetOpen(false);
+    if (tool === "pet") {
+      setPetVisited(true);
+    } else if (tool) {
       setVisited((current) =>
         current.includes(tool) ? current : [...current, tool],
       );
     }
   }, [tool]);
   return (
-    <GlassPanel id="performance-panel" className={styles.panel}>
-      <div hidden={petOpen}>
+    <GlassPanel
+      id="performance-panel"
+      className={`${styles.panel} ${tool === "audio" || tool === "flashcards" ? styles.toolExpanded : ""}`}
+    >
+      <div hidden={petOpen || tool === "audio" || tool === "flashcards"}>
         <ProfileSummary onSettings={onSettings} />
       </div>
       <nav
@@ -95,13 +98,14 @@ export default function PerformancePanel({
         id="sidebar-white-content"
         className={contentStyles.content}
         data-pet-expanded={petOpen}
+        data-tool-expanded={tool === "audio" || tool === "flashcards"}
       >
         {petOpen && (
           <div className={contentStyles.petClose}>
             <GlassIconButton
               id="sidebar-close-pet"
               aria-label="Fechar Pet e voltar ao perfil"
-              onClick={() => setPetOpen(false)}
+              onClick={onCloseTool}
             >
               <X size={18} />
             </GlassIconButton>
@@ -180,11 +184,17 @@ export default function PerformancePanel({
               <div
                 hidden={tool !== id}
                 key={id}
-                className={contentStyles.toolPage}
+                className={`${contentStyles.toolPage} ${id === "audio" || id === "flashcards" ? contentStyles.fullHeightToolPage : ""}`}
               >
                 <div className={contentStyles.toolHeading}>
                   <span>
-                    {id === "pomodoro" ? "Pomodoro" : "Ferramenta de estudo"}
+                    {id === "pomodoro"
+                      ? "Pomodoro"
+                      : id === "audio"
+                        ? "Biblioteca de áudio"
+                        : id === "flashcards"
+                          ? "Flashcards"
+                          : "Ferramenta de estudo"}
                   </span>
                   <GlassIconButton
                     id={`sidebar-close-${id}`}
@@ -199,19 +209,6 @@ export default function PerformancePanel({
             );
           })}
         </Suspense>
-      </div>
-      <div className={contentStyles.petLauncher} hidden={petOpen}>
-        <GlassIconButton
-          id="sidebar-open-pet"
-          aria-label="Abrir Pet em toda a terceira coluna"
-          onClick={() => {
-            onCloseTool();
-            setPetVisited(true);
-            setPetOpen(true);
-          }}
-        >
-          <PawPrint size={25} />
-        </GlassIconButton>
       </div>
     </GlassPanel>
   );

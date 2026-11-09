@@ -1,4 +1,5 @@
 import { validStudyPlans } from "../lib/studyInsights";
+import { removeNotebookPage } from "../lib/notebookPages";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type {
@@ -58,6 +59,7 @@ interface StudyState {
   moveActivity: (id: string, date: string) => void;
   removeActivity: (id: string) => void;
   saveNote: (id: string, html: string) => void;
+  deleteNotebookPage: (subjectId: string, contentIndex: number) => void;
   addFlashcard: (card: Omit<Flashcard, "id" | "due" | "interval">) => void;
   reviewFlashcard: (id: string, rating: number) => void;
   deleteFlashcard: (id: string) => void;
@@ -245,6 +247,10 @@ export const useStudyStore = create<StudyState>()(
         set((s) => ({ activities: s.activities.filter((a) => a.id !== id) })),
       saveNote: (id, html) =>
         set((s) => ({ notes: { ...s.notes, [id]: html } })),
+      deleteNotebookPage: (subjectId, contentIndex) =>
+        set((s) => ({
+          notes: removeNotebookPage(s.notes, subjectId, contentIndex),
+        })),
       addFlashcard: (card) =>
         set((s) => ({
           flashcards: [

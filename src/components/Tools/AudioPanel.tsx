@@ -112,13 +112,19 @@ export default function AudioPanel() {
     }
   }
   return (
-    <div id="audio-library-tool">
-      <div className="tool-eyebrow">
-        <Mic size={13} /> DÊ VOZ AO APRENDIZADO
-      </div>
-      <h2 className="tool-title">Suas ideias, em voz alta.</h2>
-      <p className="tool-description">Grave resumos para ouvir no seu tempo.</p>
-      <div className="form-stack">
+    <div id="audio-library-tool" className={styles.audioWorkspace}>
+      <header className={styles.audioHeader}>
+        <div className="tool-eyebrow">
+          <Mic size={13} /> DÊ VOZ AO APRENDIZADO
+        </div>
+        <h2 className={`tool-title ${styles.audioTitle}`}>
+          Suas ideias, em voz alta.
+        </h2>
+        <p className={`tool-description ${styles.audioDescription}`}>
+          Grave resumos para ouvir no seu tempo.
+        </p>
+      </header>
+      <div className={`form-stack ${styles.audioComposer}`}>
         <label>
           Disciplina
           <select
@@ -196,7 +202,7 @@ export default function AudioPanel() {
           />
         </label>
       </div>
-      <div className={styles.audioList}>
+      <div className={styles.audioList} aria-label="Gravações salvas">
         {notes
           .filter((n) => n.title.toLowerCase().includes(search.toLowerCase()))
           .map((note) => (
@@ -207,14 +213,24 @@ export default function AudioPanel() {
               onRename={refresh}
             />
           ))}
+        {!notes.length && (
+          <div className={`empty-state ${styles.audioEmptyState}`}>
+            <Mic size={30} />
+            <strong>O que você aprendeu hoje?</strong>
+            <p>Suas gravações ficam salvas neste dispositivo.</p>
+          </div>
+        )}
+        {notes.length > 0 &&
+          !notes.some((note) =>
+            note.title.toLowerCase().includes(search.toLowerCase()),
+          ) && (
+            <div className={`empty-state ${styles.audioEmptyState}`}>
+              <Search size={24} />
+              <strong>Nenhuma gravação encontrada</strong>
+              <p>Tente buscar por outro nome.</p>
+            </div>
+          )}
       </div>
-      {!notes.length && (
-        <div className="empty-state">
-          <Mic size={30} />
-          <strong>O que você aprendeu hoje?</strong>
-          <p>Suas gravações ficam salvas neste dispositivo.</p>
-        </div>
-      )}
     </div>
   );
 }

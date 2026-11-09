@@ -6,9 +6,6 @@
   padding: 18px 3.5vw 24px;
   margin: auto;
 }
-.workspace[data-studying="true"] {
-  --header-height: 128px;
-}
 .wallpaper {
   position: fixed;
   inset: 0;
@@ -87,6 +84,19 @@
 .center > section {
   min-height: 0;
 }
+.centerToolPage {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  background: var(--calendar-surface);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(28px) saturate(125%);
+}
 .contextWrapper > section {
   height: var(--workspace-height);
   min-height: 600px;
@@ -110,6 +120,10 @@
     height: auto;
     min-height: 0;
     max-height: none;
+  }
+  .right[data-tool-expanded="true"] .contextWrapper > section {
+    height: var(--workspace-height);
+    min-height: 420px;
   }
   .left > section,
   .center {
@@ -165,11 +179,19 @@
     min-height: 600px;
     max-height: none;
   }
+  .right[data-tool-expanded="true"] .contextWrapper > section {
+    height: min(700px, calc(100dvh - 220px));
+    min-height: 390px;
+  }
   .center {
     height: auto;
     min-height: 0;
   }
   .center > section {
     min-height: 650px;
+  }
+  .centerToolPage {
+    height: min(740px, calc(100dvh - 230px));
+    min-height: 480px;
   }
 }

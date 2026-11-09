@@ -86,9 +86,6 @@
   white-space: nowrap;
   cursor: pointer;
 }
-.header[data-studying="true"] {
-  padding-top: 60px;
-}
 .navigation {
   display: flex;
   align-items: stretch;

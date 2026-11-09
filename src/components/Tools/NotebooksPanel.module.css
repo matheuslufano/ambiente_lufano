@@ -1,0 +1,765 @@
+.notebookWorkspace {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  padding: clamp(14px, 2.1vw, 26px);
+  color: var(--text);
+}
+.notebookHeader {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--separator);
+}
+.notebookHeader > div {
+  min-width: 0;
+}
+.notebookEyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+.notebookHeader h2 {
+  margin: 7px 0 3px;
+  font-size: clamp(21px, 2vw, 30px);
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+}
+.notebookHeader p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.notebookHeader > button {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+}
+.notebookShelf {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  align-content: start;
+  gap: 18px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px 4px 4px;
+}
+.notebookBook {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.notebookCover {
+  display: flex;
+  min-height: 154px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 17px;
+  border: 1px solid #ffffff60;
+  border-left: 5px solid #ffffff75;
+  border-radius: 5px 13px 13px 5px;
+  background:
+    linear-gradient(105deg, #00000020, transparent 11%),
+    var(--notebook-cover, var(--accent));
+  box-shadow:
+    4px 3px 0 var(--surface),
+    6px 5px 0 #00000012,
+    0 12px 24px #10101018;
+  color: #fff;
+  text-shadow: 0 1px 4px #00000035;
+  transform-origin: left center;
+  transition:
+    transform 0.28s,
+    box-shadow 0.28s;
+}
+.notebookBook:hover .notebookCover,
+.notebookBook:focus-visible .notebookCover {
+  transform: perspective(700px) rotateY(-7deg) translateY(-2px);
+  box-shadow:
+    5px 4px 0 var(--surface),
+    7px 6px 0 #00000012,
+    0 16px 26px #10101020;
+}
+.notebookCover strong {
+  font-size: 15px;
+  line-height: 1.4;
+}
+.notebookBookCaption {
+  padding-left: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.notebookEmptyShelf {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 230px;
+  padding: 20px;
+  color: var(--muted);
+  text-align: center;
+}
+.notebookEmptyShelf svg {
+  color: var(--accent);
+}
+.notebookEmptyShelf strong {
+  color: var(--text);
+  font-size: 14px;
+}
+.notebookEmptyShelf p {
+  margin: 0;
+  font-size: 11px;
+}
+.openNotebook {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 12px;
+}
+.openNotebookToolbar,
+.pageTurnControls {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+.openNotebookToolbar {
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+}
+.openNotebookToolbar > button {
+  padding: 9px 12px;
+  font-size: 11px;
+}
+.pageTurnControls {
+  gap: 9px;
+}
+.pageTurnControls > span {
+  min-width: 84px;
+  color: var(--muted);
+  font-size: 10px;
+  text-align: center;
+}
+.pageTurnControls button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.notebookBookFrame {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 8px;
+  border: 1px solid #8b6d4a24;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #806243, #b18e65 50%, #795a3c);
+  box-shadow: 0 10px 24px #291b111b;
+  perspective: 1300px;
+}
+.notebookBookEdge {
+  position: absolute;
+  z-index: 4;
+  top: 64px;
+  bottom: 8px;
+  display: grid;
+  width: 30px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: #fffefaaa;
+  color: #57554d;
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.18s,
+    background 0.18s;
+}
+.notebookBookFrame:hover .notebookBookEdge,
+.notebookBookEdge:focus-visible {
+  opacity: 0.8;
+}
+.notebookBookEdge:hover {
+  background: #fffefae8;
+  opacity: 1;
+}
+.notebookBookEdge:disabled {
+  cursor: default;
+  opacity: 0;
+  pointer-events: none;
+}
+.notebookBookEdge[data-edge="previous"] {
+  left: 8px;
+  border-radius: 5px 0 0 5px;
+}
+.notebookBookEdge[data-edge="next"] {
+  right: 8px;
+  border-radius: 0 5px 5px 0;
+}
+.notebookBookmarks {
+  position: absolute;
+  z-index: 1;
+  top: 8%;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: visible;
+  pointer-events: none;
+}
+.notebookBookmarks[data-side="left"] {
+  top: 4%;
+  right: calc(100% - 8px);
+  align-items: flex-end;
+}
+.notebookBookmarks[data-side="right"] {
+  left: calc(100% - 8px);
+  align-items: flex-start;
+}
+.notebookBookmark {
+  position: relative;
+  display: flex;
+  flex: 0 0 30px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 48px;
+  min-height: 30px;
+  min-width: 48px;
+  interpolate-size: allow-keywords;
+  padding: 4px 18px 4px 10px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: var(--bookmark-color, #ff454f);
+  color: #fff;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 11px) 0,
+    100% 50%,
+    calc(100% - 11px) 100%,
+    0 100%
+  );
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 1;
+  transition:
+    width 220ms ease,
+    filter 180ms ease;
+}
+.notebookBookmark[data-color="contents"] {
+  --bookmark-color: #ff343e;
+  padding: 4px 10px 4px 22px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 18px 50%);
+}
+.notebookBookmark[data-color="0"] {
+  --bookmark-color: #ff7b24;
+}
+.notebookBookmark[data-color="1"] {
+  --bookmark-color: #ffc400;
+}
+.notebookBookmark[data-color="2"] {
+  --bookmark-color: #30c45a;
+}
+.notebookBookmark[data-color="3"] {
+  --bookmark-color: #00bfa5;
+}
+.notebookBookmark[data-color="4"] {
+  --bookmark-color: #08b6d8;
+}
+.notebookBookmark[data-color="5"] {
+  --bookmark-color: #2381ef;
+}
+.notebookBookmark[data-color="6"] {
+  --bookmark-color: #6554e8;
+}
+.notebookBookmark[data-color="7"] {
+  --bookmark-color: #c72ed7;
+}
+.notebookBookmark:hover,
+.notebookBookmark:focus-visible {
+  width: max-content;
+  z-index: 1;
+  filter: saturate(1.08);
+}
+.notebookBookmark[data-active="true"] {
+  opacity: 1;
+  box-shadow: inset 0 0 0 2px #ffffffb0;
+}
+.notebookBookmark:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.notebookBookmarkLabel {
+  display: block;
+  flex: 0 0 auto;
+  width: max-content;
+  font: 600 10px/1.2 var(--font-sans, sans-serif);
+  text-align: left;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.notebookBookmark:hover .notebookBookmarkLabel,
+.notebookBookmark:focus-visible .notebookBookmarkLabel {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .notebookBookmark,
+  .notebookBookmarkLabel {
+    transition: none;
+  }
+}
+.notebookSpread {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  border-radius: 6px;
+  transform-style: preserve-3d;
+  box-shadow: 0 2px 7px #20170e20;
+}
+.notebookPageSlot {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+.notebookPageSlot[data-deleting="true"] {
+  z-index: 6;
+}
+.notebookPage {
+  grid-area: 1 / 1;
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  flex-direction: column;
+  padding: 19px 15px 32px 22px;
+  background-color: #fffefa;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 30px,
+    #91b7d151 31px,
+    transparent 32px
+  );
+}
+.notebookPageSlot:first-child > .notebookPage {
+  border-right: 1px solid #a7786850;
+  box-shadow: inset -8px 0 12px -12px #2f241c;
+}
+.notebookPageSlot:last-child > .notebookPage {
+  box-shadow: inset 8px 0 12px -12px #2f241c;
+}
+.notebookPage::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 52px;
+  width: 1px;
+  background: #d77e7b79;
+  content: "";
+  pointer-events: none;
+}
+.notebookPageFooter {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  left: 12px;
+  color: #8c8b85;
+  font-size: 9px;
+  text-align: center;
+  pointer-events: none;
+}
+.notebookPageTitle,
+.contentsTitle {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  min-width: 0;
+  margin: 0 0 8px;
+  padding: 0 0 3px 34px;
+  border: 0;
+  border-bottom: 1px solid #6c60482a;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: #33342f;
+  font:
+    600 15px/32px Georgia,
+    serif;
+}
+.notebookPageTitle:focus {
+  border-bottom-color: #7e9cb9a0;
+}
+.notebookPageTitle {
+  padding-right: 36px;
+}
+.notebookDeletePage {
+  position: absolute;
+  z-index: 3;
+  top: 20px;
+  right: 15px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #b98b7c35;
+  border-radius: 8px;
+  background: #fffefa;
+  color: #8c7165;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+.notebookDeletePage:hover,
+.notebookDeletePage:focus-visible {
+  color: #b72e34;
+  background: #ffe8e3;
+  outline: 2px solid #b72e3450;
+  outline-offset: 2px;
+}
+.notebookDeletePage:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.notebookDeleteActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.notebookPage[data-deleting="true"] {
+  z-index: 6;
+  pointer-events: none;
+  transform-origin: center;
+  box-shadow: 0 14px 28px #2f241c55;
+}
+.notebookPage[data-deleting="true"]::after {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background:
+    conic-gradient(from 30deg at 30% 40%, #fff0, #554a3d75, #fff9, #fff0),
+    conic-gradient(from 160deg at 65% 60%, #fff0, #554a3d88, #ffff, #fff0),
+    repeating-linear-gradient(
+      35deg,
+      #fff0 0 16%,
+      #74634a70 18%,
+      #fffa 20%,
+      #fff0 24%
+    );
+  animation: notebook-paper-creases 0.98s ease-in forwards;
+}
+@keyframes notebook-paper-creases {
+  0%,
+  25% {
+    opacity: 0;
+  }
+  65%,
+  100% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .notebookPage[data-deleting="true"]::after {
+    animation: none;
+  }
+}
+.notebookPageTitle::placeholder {
+  color: #88877f;
+  opacity: 0.7;
+  font-weight: 400;
+}
+.contentsTitle {
+  padding-left: 34px;
+}
+.notebookContents {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 5px 14px 34px;
+}
+.notebookContents button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 1px dotted #77766a62;
+  background: transparent;
+  color: #33342f;
+  font:
+    12px/1.5 Georgia,
+    serif;
+  text-align: left;
+  cursor: pointer;
+}
+.notebookContents button:hover,
+.notebookContents button:focus-visible {
+  color: var(--accent);
+  outline: none;
+}
+.notebookContents button > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.notebookContents button > small {
+  flex-shrink: 0;
+  color: #77766a;
+  font: inherit;
+}
+.notebookContentsEmpty {
+  margin: 0;
+  color: #77766a;
+  font:
+    italic 11px/32px Georgia,
+    serif;
+}
+.notebookPage[data-active="true"] {
+  box-shadow: inset 0 0 0 1px #8ba6bd55;
+}
+.notebookFlipSheet {
+  position: absolute;
+  z-index: 5;
+  top: 8px;
+  bottom: 8px;
+  width: calc(50% - 8px);
+  transform-style: preserve-3d;
+  box-shadow: 0 7px 20px #241a1233;
+  pointer-events: none;
+}
+.notebookFlipSheet[data-direction="next"] {
+  right: 8px;
+  transform-origin: left center;
+}
+.notebookFlipSheet[data-direction="previous"] {
+  left: 8px;
+  transform-origin: right center;
+}
+.notebookFlipFront,
+.notebookFlipBack {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 18px;
+  overflow: hidden;
+  border: 1px solid #e6e0d3;
+  background-color: #fffefa;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 30px,
+    #91b7d151 31px,
+    transparent 32px
+  );
+  color: #33342f;
+  backface-visibility: hidden;
+  font:
+    600 14px/1.5 Georgia,
+    serif;
+}
+.notebookFlipFront {
+  box-shadow: inset -8px 0 14px -12px #302318;
+}
+.notebookFlipBack {
+  transform: rotateY(180deg);
+  box-shadow: inset 8px 0 14px -12px #302318;
+}
+.notebookFlipFront > span,
+.notebookFlipBack > span {
+  align-self: center;
+  color: #8c8b85;
+  font: 9px/1.4 var(--font-sans, sans-serif);
+}
+.notebookWritingArea {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.notebookToolbar {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+  margin: 0 0 8px 30px;
+}
+.notebookToolbar button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #fffefaeb;
+}
+.notebookEditor {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: transparent;
+  color: #2f302f;
+  font-size: 12px;
+}
+.notebookEditor :global(.tiptap) {
+  min-height: 100%;
+  padding: 0 6px 12px 34px;
+  outline: none;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 32px;
+  overflow-wrap: anywhere;
+}
+.notebookEditor :global(.tiptap p) {
+  position: relative;
+  min-height: 32px;
+  margin: 0;
+  line-height: 32px;
+}
+.notebookEditor
+  :global(.tiptap p:only-child:has(> br.ProseMirror-trailingBreak)::before) {
+  position: absolute;
+  inset: 0 auto auto 0;
+  color: #88877f;
+  content: "Comece suas anotações aqui…";
+  font:
+    italic 12px/32px Georgia,
+    serif;
+  opacity: 0.72;
+  pointer-events: none;
+}
+.notebookEditor :global(.tiptap ul),
+.notebookEditor :global(.tiptap ol) {
+  padding-left: 18px;
+  line-height: 32px;
+}
+.notebookSavedStatus {
+  flex-shrink: 0;
+  margin: 4px 0 0 32px;
+  color: #75766f;
+  font-size: 8px;
+}
+.notebookFooter {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+}
+.notebookFooter > span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.notebookFooter button {
+  padding: 9px 13px;
+  font-size: 10px;
+}
+@media (max-width: 700px) {
+  .notebookWorkspace {
+    padding: 13px;
+  }
+  .notebookHeader h2 {
+    font-size: 22px;
+  }
+  .notebookShelf {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+  }
+  .notebookCover {
+    min-height: 125px;
+    padding: 14px;
+  }
+  .openNotebookToolbar {
+    align-items: flex-start;
+  }
+  .openNotebookToolbar > button {
+    padding: 8px;
+    font-size: 9px;
+  }
+  .pageTurnControls {
+    gap: 4px;
+  }
+  .pageTurnControls > span {
+    min-width: 56px;
+    font-size: 9px;
+  }
+  .notebookPage {
+    padding-right: 9px;
+    padding-left: 12px;
+  }
+  .notebookPageSlot:first-child > .notebookPage {
+    border-right: 0;
+  }
+  .notebookPage::before {
+    left: 38px;
+  }
+  .notebookBookFrame[data-single-page="true"] .notebookSpread {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .notebookBookFrame[data-single-page="true"] .notebookFlipSheet {
+    right: 8px;
+    left: 8px;
+    width: auto;
+  }
+  .notebookBookEdge {
+    width: 25px;
+    opacity: 0.58;
+  }
+  .notebookPageTitle {
+    padding-left: 25px;
+  }
+  .contentsTitle {
+    padding-left: 25px;
+  }
+  .notebookContents {
+    padding-left: 25px;
+  }
+  .notebookEditor :global(.tiptap) {
+    padding-left: 24px;
+  }
+  .notebookFooter > span {
+    display: none;
+  }
+}

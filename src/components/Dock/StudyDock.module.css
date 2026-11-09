@@ -16,20 +16,22 @@
   box-shadow:
     0 12px 32px #23190d20,
     inset 0 1px 1px #fff5;
-  padding: 5px 32px;
+  padding: 5px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .tools {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  gap: 15px;
+  gap: clamp(2px, 0.6vw, 8px);
 }
 .dockButton {
   position: relative;
+  min-width: 0;
   border: 0;
   background: transparent;
   padding: 0 3px 6px;
@@ -43,7 +45,7 @@
   transform: translateY(-2px) scale(1.05);
 }
 .appIcon {
-  width: 44px;
+  width: min(44px, 100%);
   height: 44px;
   display: grid;
   place-items: center;
@@ -83,29 +85,111 @@
 .startForm {
   display: flex;
   width: 100%;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
-.startForm > label {
+.startPicker {
+  position: relative;
   flex: 1;
+  min-width: 0;
+}
+.startPickerLabel {
+  display: block;
+  margin: 0 0 5px 2px;
   font-size: 9px;
   color: var(--muted);
   letter-spacing: 1px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
 }
-.startForm select {
+.startPickerTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
   border: 1px solid var(--control-border);
   border-radius: 9px;
   background: var(--control);
-  padding: 10px 8px;
+  padding: 9px 11px;
   color: var(--text);
+  font: inherit;
   font-size: 11px;
-  max-width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s,
+    background 0.18s;
+}
+.startPickerTrigger:hover,
+.startPickerTrigger[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.startPickerTrigger:focus-visible,
+.startPickerOption:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.startPickerTrigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.startPickerTrigger > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.startPickerMenu {
+  position: absolute;
+  z-index: 30;
+  right: 0;
+  bottom: calc(100% + 10px);
+  left: 0;
+  max-height: min(320px, 48vh);
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--glass-border);
+  border-radius: 13px;
+  background: var(--surface);
+  box-shadow: 0 14px 34px #1e211f30;
+  overscroll-behavior: contain;
+}
+.startPickerOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   width: 100%;
-  outline-offset: 4px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.16s,
+    color 0.16s;
+}
+.startPickerOption:hover,
+.startPickerOption[aria-selected="true"] {
+  background: color-mix(in srgb, var(--accent) 11%, var(--surface));
+  color: var(--accent);
+}
+.startPickerOption > span {
+  min-width: 0;
+}
+.startPickerEmpty {
+  margin: 0;
+  padding: 10px;
+  color: var(--muted);
+  font-size: 11px;
 }
 .sessionControls {
   display: flex;
@@ -139,39 +223,48 @@
   border-radius: 24px;
   background: var(--surface);
 }
-.startForm button:last-child {
+.startForm > button:last-child {
   padding: 10px 14px;
+  align-self: end;
+  min-height: 40px;
 }
-.bookOptions {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  display: flex;
-  gap: 8px;
-  z-index: 8;
-}
-.bookOptions button {
-  background: var(--surface);
-  box-shadow: 0 7px 25px #2a372525;
-}
-.activeIsland {
+.activeIslandAnchor {
   position: fixed;
-  top: 13px;
+  top: max(12px, env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
-  z-index: 50;
+  z-index: 10000;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  pointer-events: none;
+}
+.activeIsland {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  isolation: isolate;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 14px;
-  border-radius: 24px;
-  background: #20271feb;
-  backdrop-filter: blur(20px);
-  color: white;
-  padding: 12px 17px;
-  box-shadow: 0 7px 30px #0002;
-  max-width: calc(100% - 24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(24px) saturate(130%);
+  color: var(--text);
+  padding: 10px 14px;
+  box-shadow: 0 10px 34px #0003;
+  pointer-events: auto;
+  cursor: grab;
+}
+.activeIsland:active {
+  cursor: grabbing;
 }
 .activeIsland > div {
   display: flex;
+  flex: 1 1 120px;
+  min-width: 0;
   flex-direction: column;
   gap: 4px;
   max-width: 150px;
@@ -184,7 +277,7 @@
 }
 .activeIsland > div > span {
   font-size: 8px;
-  color: #bbc7b6;
+  color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -192,14 +285,26 @@
 .activeIsland time {
   font-variant-numeric: tabular-nums;
   font-size: 15px;
-  color: #d3e6ba;
+  color: var(--accent);
 }
 .activeIsland button {
-  background: #ffffff12;
-  border: 0;
-  color: #fff;
+  background: var(--control);
+  border: 1px solid var(--control-border);
+  color: var(--text);
   width: 28px;
   height: 28px;
+  pointer-events: auto;
+}
+.islandMessage {
+  flex-basis: 100%;
+  max-width: 320px;
+  padding: 7px 10px;
+  border: 1px solid #c63f3f55;
+  border-radius: 10px;
+  background: #c63f3f12;
+  color: #b4232c;
+  font-size: 11px;
+  line-height: 1.4;
 }
 .pulse {
   height: 6px;
@@ -229,6 +334,40 @@
   font-variant-numeric: tabular-nums;
   font-size: 18px;
 }
+.summaryEntry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  align-items: stretch;
+  gap: 9px;
+}
+.summaryEntry > label {
+  min-width: 0;
+}
+.summaryEntry > button {
+  align-self: end;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  color: var(--accent);
+  background: var(--inset);
+}
+.summaryEntry > button[data-recording="true"] {
+  color: #b4232c;
+  background: #c63f3f18;
+  border-color: #c63f3f55;
+  animation: recording-pulse 1.15s ease-in-out infinite alternate;
+}
+.summaryAudioHint {
+  margin: -8px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+@keyframes recording-pulse {
+  to {
+    box-shadow: 0 0 0 5px #c63f3f14;
+  }
+}
 @media (max-width: 700px) {
   .dockArea {
     position: fixed;
@@ -244,11 +383,8 @@
     min-height: 74px;
     border-radius: 25px;
   }
-  .tools {
-    gap: 16px;
-  }
   .appIcon {
-    width: 40px;
+    width: min(40px, 100%);
     height: 40px;
   }
   .appIcon > svg {
@@ -257,27 +393,54 @@
   }
 
   .startForm {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 94px;
     gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
+    align-items: end;
   }
-  .startForm select {
-    max-width: 105px;
-    font-size: 9px;
+  .startForm > button:first-child {
+    grid-row: 1 / span 2;
+    align-self: center;
   }
-  .startForm > label {
-    flex: 1;
+  .startPicker {
+    grid-column: 2;
   }
-  .startForm button:last-child {
+  .startPicker:nth-of-type(2) {
+    grid-row: 2;
+  }
+  .startPickerLabel {
+    margin-bottom: 3px;
+    font-size: 8px;
+  }
+  .startPickerTrigger {
+    min-height: 36px;
+    padding: 7px 9px;
     font-size: 10px;
+  }
+  .startForm > button:last-child {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+    padding: 9px 10px;
+    font-size: 10px;
+  }
+  .startPickerMenu {
+    max-height: min(280px, 42vh);
+  }
+  .activeIslandAnchor {
+    max-width: calc(100vw - 24px);
   }
   .activeIsland {
     gap: 9px;
+    padding: 9px 11px;
   }
   .activeIsland > div {
     max-width: 105px;
   }
   .activeIsland time {
     font-size: 12px;
+  }
+  .islandMessage {
+    max-width: 100%;
   }
 }

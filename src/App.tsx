@@ -16,11 +16,13 @@ const PlanningPage = lazy(() => import("./pages/PlanningPage"));
 const StudyCyclePage = lazy(() => import("./pages/StudyCyclePage"));
 const TrackingPage = lazy(() => import("./pages/TrackingPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
+const NotebooksPanel = lazy(() => import("./components/Tools/NotebooksPanel"));
 export default function App() {
   const { preferences, active } = useStudyStore();
   const page = useAppRoute();
   const { url: wallpaper } = useVisualAsset("wallpaper");
   const [tool, setTool] = useState<Tool>(null);
+  const [centerTool, setCenterTool] = useState<"notebooks" | null>(null);
   const [startRequest, setStartRequest] = useState(0);
   const [requestedSubject, setRequestedSubject] = useState<string | undefined>(
     undefined,
@@ -46,6 +48,13 @@ export default function App() {
     );
   }, [dark, preferences]);
   function openTool(value: Tool) {
+    if (value === "notebooks") {
+      setTool(null);
+      setCenterTool("notebooks");
+      setMobile("calendar");
+      return;
+    }
+    setCenterTool(null);
     setTool(value);
     if (value) setMobile("performance");
   }
@@ -123,9 +132,26 @@ export default function App() {
               className={styles.center}
               data-mobile-visible={mobile === "calendar"}
             >
-              <StudyCalendar />
+              {centerTool === "notebooks" ? (
+                <div
+                  id="workspace-notebook-center"
+                  className={styles.centerToolPage}
+                >
+                  <Suspense
+                    fallback={
+                      <p className="empty-state" role="status">
+                        Abrindo seus cadernos…
+                      </p>
+                    }
+                  >
+                    <NotebooksPanel onClose={() => setCenterTool(null)} />
+                  </Suspense>
+                </div>
+              ) : (
+                <StudyCalendar />
+              )}
               <StudyDock
-                tool={tool}
+                tool={centerTool ?? tool}
                 onTool={openTool}
                 startRequest={startRequest}
                 requestedSubject={requestedSubject}
@@ -134,6 +160,7 @@ export default function App() {
             <div
               className={styles.right}
               data-mobile-visible={mobile === "performance"}
+              data-tool-expanded={tool === "audio" || tool === "flashcards"}
             >
               <div className={styles.contextWrapper}>
                 <PerformancePanel
