@@ -1,0 +1,258 @@
+.notebooks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 16px;
+  padding: 10px 4px;
+}
+.notebook {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  color: var(--text);
+  perspective: 600px;
+}
+.notebook > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 140px;
+  padding: 17px 15px 16px 22px;
+  color: white;
+  background: linear-gradient(110deg, #0002, transparent 9%), var(--book-color);
+  border-radius: 3px 10px 10px 3px;
+  box-shadow:
+    4px 3px 0 var(--surface),
+    5px 4px 0 #a6aa9d44,
+    7px 8px 13px #28312516;
+  border-left: 3px solid #ffffff35;
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+.notebook:hover > div {
+  transform: rotateY(-15deg);
+}
+.notebook > div > span {
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 550;
+}
+.notebook > small {
+  display: block;
+  margin: 13px 0 0;
+  font-size: 8px;
+  color: var(--muted);
+}
+.notebookTitle {
+  font-size: 16px;
+  font-weight: 550;
+  margin: 24px 0 18px;
+}
+.editorToolbar {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.editorToolbar button {
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+}
+.editor {
+  font-size: 12px;
+  line-height: 1.9;
+  background: var(--paper);
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  padding: 16px;
+  color: var(--text);
+  min-height: 320px;
+  overflow-wrap: anywhere;
+  box-shadow: 3px 4px 0 var(--inset);
+}
+.editor :global(.tiptap) {
+  min-height: 300px;
+  outline: none;
+}
+.editor :global(.tiptap p) {
+  margin: 0 0 12px;
+}
+.flashcardControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+.flashcardControls label {
+  font-size: 9px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.flashcardControls input {
+  accent-color: var(--accent);
+}
+.flashcard {
+  width: 100%;
+  height: 290px;
+  perspective: 900px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text);
+  text-align: center;
+}
+.cardInner {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.flashcard[data-flipped="true"] .cardInner {
+  transform: rotateY(180deg);
+}
+.cardFront,
+.cardBack {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  backface-visibility: hidden;
+  background: var(--paper);
+  border: 1px solid var(--control-border);
+  padding: 26px 20px;
+  border-radius: 15px;
+  box-shadow:
+    3px 4px 0 var(--inset),
+    0 10px 25px #17261807;
+}
+.cardBack {
+  transform: rotateY(180deg);
+}
+.cardFront > small,
+.cardBack > small {
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.4px;
+}
+.cardFront strong,
+.cardBack strong {
+  font-family: Georgia, serif;
+  font-size: 19px;
+  line-height: 1.6;
+  font-weight: 400;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.cardFront > span,
+.cardBack > span {
+  font-size: 8px;
+  color: var(--faint);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cardNavigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  margin: 25px 0;
+}
+.cardNavigation > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.ratings {
+  display: flex;
+  gap: 7px;
+  margin-top: 15px;
+}
+.ratings button {
+  flex: 1;
+  padding: 9px 3px;
+  font-size: 9px;
+  border: 1px solid var(--control-border);
+  border-radius: 9px;
+  background: var(--control);
+  color: var(--text);
+  cursor: pointer;
+}
+.ratings button:nth-child(1) {
+  color: #bc7062;
+}
+.ratings button:nth-child(3),
+.ratings button:nth-child(4) {
+  color: var(--accent);
+}
+.recordingControls {
+  display: flex;
+  gap: 8px;
+}
+.recordingStatus {
+  font-size: 11px;
+  color: #bf6e5b;
+}
+.audioSearch {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  background: var(--inset);
+  padding-left: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--control-border);
+}
+.audioSearch input {
+  border: 0 !important;
+  background: transparent !important;
+}
+.audioList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+.audioItem {
+  padding: 13px;
+  border: 1px solid var(--separator);
+  border-radius: 12px;
+  background: var(--inset);
+}
+.audioItem > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.audioItem input {
+  font-size: 11px;
+  font-weight: 550;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+}
+.audioItem > span {
+  font-size: 8px;
+  color: var(--muted);
+}
+.audioItem audio {
+  width: 100%;
+  height: 32px;
+  margin-top: 13px;
+}
+.audioItem button {
+  width: 25px;
+  height: 25px;
+  border: 0;
+  background: transparent;
+}

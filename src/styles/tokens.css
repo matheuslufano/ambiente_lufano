@@ -1,0 +1,82 @@
+:root {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: var(--text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --text: #242424;
+  --muted: #6e6e73;
+  --faint: #a2a99b;
+  --accent: #1671db;
+  --glass: rgba(230, 229, 226, 0.86);
+  --glass-border: rgba(255, 255, 255, 0.82);
+  --surface: #f3f3f3;
+  --calendar-surface: rgba(247, 247, 247, 0.96);
+  --control: rgba(255, 255, 255, 0.9);
+  --control-border: rgba(133, 149, 115, 0.1);
+  --inset: rgba(218, 228, 208, 0.22);
+  --separator: rgba(60, 60, 67, 0.15);
+  --today: #1671db0a;
+  --chart-empty: #dce3d6;
+  --paper: #fbfbf5;
+  --dock: rgba(128, 101, 77, 0.62);
+  --dock-icon: #fff;
+  --error: #ba6358;
+  --shadow-panel: 0 12px 40px #3f513012;
+  --wallpaper-base: #e2e8d8;
+  --orb-one: #c2cda8;
+  --orb-two: #c5d2b9;
+  --orb-three: #f3edd5;
+}
+:root[data-theme="dark"] {
+  --text: #e6ebdf;
+  --muted: #a1ad99;
+  --faint: #7c8876;
+  --accent: #95ad7e;
+  --glass: rgba(32, 40, 32, 0.86);
+  --glass-border: rgba(190, 207, 171, 0.14);
+  --surface: #252f25;
+  --calendar-surface: rgba(32, 37, 33, 0.97);
+  --control: rgba(74, 86, 66, 0.4);
+  --control-border: rgba(157, 178, 139, 0.16);
+  --inset: rgba(145, 169, 126, 0.07);
+  --separator: rgba(152, 171, 133, 0.14);
+  --today: #98b87818;
+  --chart-empty: #3f4b39;
+  --paper: #2d372b;
+  --dock: rgba(43, 55, 38, 0.84);
+  --wallpaper-base: #171f17;
+  --orb-one: #31442a;
+  --orb-two: #26392d;
+  --orb-three: #47452b;
+  --shadow-panel: 0 12px 40px #0002;
+}
+:root[data-wallpaper="sand"] {
+  --wallpaper-base: #eae1d2;
+  --orb-one: #d8c3a0;
+  --orb-two: #c6c3b4;
+  --orb-three: #f5e8d8;
+}
+:root[data-wallpaper="blue"] {
+  --wallpaper-base: #dce6eb;
+  --orb-one: #acc8d4;
+  --orb-two: #b3c5c6;
+  --orb-three: #e5e8d8;
+}
+:root[data-theme="dark"][data-wallpaper="sand"] {
+  --wallpaper-base: #27251f;
+  --orb-one: #4d3d29;
+  --orb-two: #35372c;
+  --orb-three: #4b4234;
+}
+:root[data-theme="dark"][data-wallpaper="blue"] {
+  --wallpaper-base: #1b252b;
+  --orb-one: #2b414d;
+  --orb-two: #2d4545;
+  --orb-three: #3c453c;
+}

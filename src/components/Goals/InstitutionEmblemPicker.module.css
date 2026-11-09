@@ -1,0 +1,64 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.institution {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 330px;
+  overflow: auto;
+}
+.results article {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid var(--separator);
+  border-radius: 12px;
+  padding: 10px;
+  background: var(--control);
+}
+.results article > img {
+  width: 45px;
+  height: 62px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.results article > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.results strong {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.results span {
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.results a {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--accent);
+}
+.results button {
+  font-size: 10px;
+  padding: 7px 9px;
+}
+.source {
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--accent);
+}

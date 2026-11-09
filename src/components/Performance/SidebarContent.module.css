@@ -1,0 +1,183 @@
+.tabs {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--separator);
+  overflow: auto;
+  gap: 0;
+  flex-shrink: 0;
+}
+.tabs button {
+  transition:
+    background 0.2s,
+    color 0.2s;
+  flex: 1;
+  min-width: 45px;
+  white-space: nowrap;
+  font-size: 7px;
+  line-height: 1.35;
+  padding: 6px 3px;
+  border: 0;
+  border-radius: 0;
+  background: #dededc;
+  color: var(--text);
+  cursor: pointer;
+}
+.tabs button[aria-pressed="true"] {
+  background: var(--control);
+  font-weight: 650;
+  color: var(--accent);
+}
+.content {
+  background: var(--control);
+  border-radius: 0 0 15px 15px;
+  padding: 10px;
+  min-height: 0;
+  flex: 0 1 auto;
+  overflow-y: auto;
+}
+.tabs[hidden],
+.petLauncher[hidden] {
+  display: none;
+}
+.content[data-pet-expanded="true"] {
+  flex: 1;
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 15px;
+}
+.petClose {
+  display: flex;
+  justify-content: flex-end;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 10px;
+  overflow: visible;
+}
+.petClose button {
+  width: 25px;
+  height: 25px;
+  color: var(--muted);
+  transform: translate(5px, -7px);
+}
+.petLauncher {
+  padding-top: 12px;
+  flex-shrink: 0;
+}
+.petLauncher button {
+  width: 50px;
+  height: 44px;
+  border-radius: 9px;
+  color: #000;
+  background: var(--control);
+}
+.content > div:not([hidden]) {
+  animation: sidebar-reveal 0.2s ease-out;
+}
+@keyframes sidebar-reveal {
+  from {
+    opacity: 0.5;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.selector {
+  margin: 0 0 22px;
+  flex-shrink: 0;
+}
+.selector select {
+  width: 100%;
+  border: 1px solid var(--control-border);
+  border-radius: 20px;
+  padding: 7px 12px;
+  background: var(--control);
+  font-size: 11px;
+  text-align: center;
+  color: var(--text);
+}
+.toolHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  position: relative;
+  min-height: 24px;
+}
+.toolHeading span {
+  text-align: center;
+  flex: 1;
+  font-size: 10px;
+  color: var(--muted);
+}
+.toolHeading button {
+  color: #ff1724;
+  background: #ffdddd;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+}
+.toolPage {
+  min-width: 0;
+}
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.history h3 {
+  font-size: 13px;
+  margin: 0 0 6px;
+}
+.history article {
+  border-bottom: 1px solid var(--separator);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.history strong {
+  font-size: 11px;
+}
+.history span {
+  font-size: 9px;
+  color: var(--muted);
+}
+.history p {
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 0;
+}
+.subjectList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.subjectList article {
+  padding: 12px;
+  background: var(--inset);
+  border-radius: 10px;
+}
+.subjectList strong {
+  font-size: 11px;
+}
+.subjectList p {
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 6px 0 0;
+}
+
+.content[data-tool="pomodoro"] {
+  border-radius: 0 0 14px 14px;
+  flex: 0 1 auto;
+  background: #fff;
+}
+.tabs button svg {
+  vertical-align: middle;
+}
+.petLauncher svg {
+  fill: currentColor;
+}

@@ -1,0 +1,374 @@
+.game {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.header strong {
+  font-size: 16px;
+}
+.header > div > span {
+  font-size: 9px;
+  color: var(--muted);
+}
+.header > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #94742e;
+  font-size: 12px;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.stats label {
+  min-width: 0;
+}
+.stats label > span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 7px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.stats progress {
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border: 0;
+  border-radius: 4px;
+  display: block;
+  margin-top: 6px;
+}
+.stats progress::-webkit-progress-bar {
+  background: #e8e4dc;
+  border-radius: 4px;
+}
+.stats progress::-webkit-progress-value {
+  background: #98ad8c;
+  border-radius: 4px;
+}
+.stats progress::-moz-progress-bar {
+  background: #98ad8c;
+  border-radius: 4px;
+}
+.scene {
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #eee3d5;
+}
+.scenery {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.characterButton {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 66%;
+  height: 75%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 40%;
+}
+.character {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 4px 3px #563d2920);
+  animation: pet-breathe 4s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+.spriteWrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.accessoryLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.heldItem {
+  position: absolute;
+  left: 28%;
+  top: 61%;
+  width: 44%;
+  height: 22%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.character[data-action="reading"] {
+  animation: pet-read 5s ease-in-out infinite;
+}
+.character[data-action="playing"],
+.character[data-action="celebrating"],
+.character[data-action="happy"] {
+  animation: pet-hop 0.8s ease-in-out 3;
+}
+.character[data-action="affection"] {
+  animation: pet-love 0.8s ease-in-out 3;
+}
+.character[data-action="sleeping"] {
+  animation: pet-breathe 5s ease-in-out infinite;
+}
+.character[data-action="feeding"],
+.character[data-action="coffee"] {
+  animation: pet-read 0.9s ease-in-out 3;
+}
+.eyes {
+  animation: pet-blink 6s infinite;
+  transform-origin: 50% 35%;
+}
+.heldBook {
+  animation: pet-page 4s ease-in-out infinite;
+  transform-origin: 50% 70%;
+}
+.turningPage {
+  transform-origin: 129px 209px;
+  animation: pet-turn-page 5s ease-in-out infinite;
+}
+.character[data-action="feeding"] .mouth {
+  transform-origin: 129px 152px;
+  animation: pet-chew 0.5s ease-in-out 6;
+}
+@keyframes pet-turn-page {
+  0%,
+  65%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.3;
+  }
+  80% {
+    transform: scaleX(0.05);
+    opacity: 0.6;
+  }
+  90% {
+    transform: scaleX(-0.9);
+    opacity: 0.4;
+  }
+}
+@keyframes pet-chew {
+  50% {
+    transform: scaleY(0.5);
+  }
+}
+.sceneLabel {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 8px;
+  color: #6c665a;
+  background: #fff9;
+  padding: 4px 7px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+.sceneNavigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sceneNavigation button {
+  background: var(--inset);
+  border: 0;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  cursor: pointer;
+}
+.sceneNavigation > span {
+  display: flex;
+  gap: 5px;
+}
+.sceneNavigation > span > button {
+  width: 17px;
+  height: 17px;
+  background: transparent;
+}
+.sceneNavigation i {
+  width: 5px;
+  height: 5px;
+  background: #c9cec3;
+  border-radius: 50%;
+}
+.sceneNavigation button[aria-pressed="true"] i {
+  background: var(--accent);
+}
+.studyMessage {
+  font-size: 10px;
+  color: var(--accent);
+  line-height: 1.6;
+  text-align: center;
+  min-height: 30px;
+  margin: 0;
+}
+.actions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+}
+.actions button {
+  padding: 9px 2px;
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  background: var(--inset);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.actions button:hover {
+  transform: translateY(-2px);
+}
+.actions button span {
+  font-size: 7px;
+}
+.shop {
+  border-top: 1px solid var(--separator);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.shop h4 {
+  font-size: 12px;
+  margin: 0 0 5px;
+}
+.shop > button,
+.shop form > button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--separator);
+  border-radius: 10px;
+  background: var(--control);
+  padding: 11px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+.shop > button > span {
+  flex: 1;
+  font-size: 11px;
+}
+.shop small {
+  display: block;
+  font-size: 8px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.shop strong {
+  font-size: 9px;
+  font-weight: 550;
+}
+.shop details > summary {
+  font-size: 11px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.shop details > label {
+  margin-top: 9px;
+}
+.history {
+  padding-top: 13px;
+  border-top: 1px solid var(--separator);
+  font-size: 10px;
+  color: var(--muted);
+}
+.history summary {
+  cursor: pointer;
+  color: var(--text);
+}
+.history > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--separator);
+  line-height: 1.6;
+}
+.history strong {
+  font-size: 9px;
+  color: var(--accent);
+  font-weight: 550;
+}
+.history p {
+  line-height: 1.7;
+}
+.footer {
+  font-size: 8px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-align: center;
+  margin: 0;
+}
+@keyframes pet-breathe {
+  50% {
+    transform: scale(1.015, 1.008);
+  }
+}
+@keyframes pet-read {
+  50% {
+    transform: rotate(1deg) translateY(1px);
+  }
+}
+@keyframes pet-hop {
+  50% {
+    transform: translateY(-7px) rotate(-2deg);
+  }
+}
+@keyframes pet-love {
+  50% {
+    transform: rotate(3deg);
+  }
+}
+@keyframes pet-blink {
+  0%,
+  43%,
+  47%,
+  100% {
+    transform: scaleY(1);
+  }
+  45% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes pet-page {
+  50% {
+    transform: skewY(1.5deg);
+  }
+}

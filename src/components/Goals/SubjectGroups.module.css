@@ -1,0 +1,158 @@
+.curriculum {
+  background: var(--control);
+  border: 1px solid var(--control-border);
+  border-radius: 18px;
+  padding: 16px 12px 20px;
+  min-width: 0;
+}
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.curriculumTitle {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 15px;
+}
+.columns > span:first-child {
+  padding-right: 8px;
+}
+.columns > span:last-child {
+  text-align: center;
+  border-left: 1px solid var(--separator);
+}
+.columns small {
+  font-size: 8px;
+  display: block;
+}
+.group {
+  border-top: 1px solid var(--separator);
+  padding: 11px 0;
+}
+.group:last-child {
+  padding-bottom: 0;
+}
+.group > summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--text);
+}
+.group > summary > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: transform 0.2s;
+  color: var(--muted);
+}
+.group[open] > summary > svg {
+  transform: rotate(90deg);
+}
+.group > summary > strong {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 700;
+  flex: 1;
+}
+.group > summary > span {
+  font-size: 9px;
+  color: var(--muted);
+  padding: 3px 0 0 5px;
+}
+.groupSubjects {
+  padding-top: 8px;
+}
+.group summary::-webkit-details-marker,
+.subject summary::-webkit-details-marker {
+  display: none;
+}
+.group summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 5px;
+}
+.subject > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 76px;
+  cursor: pointer;
+  list-style: none;
+  align-items: stretch;
+}
+.subjectName {
+  font-size: 13px;
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 3px 7px 3px 4px;
+  overflow-wrap: anywhere;
+}
+.subjectName > svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+  transition: transform 0.2s;
+  color: var(--muted);
+}
+.subject[open] > summary .subjectName > svg {
+  transform: rotate(90deg);
+}
+.dedication {
+  border-left: 1px solid var(--separator);
+  color: var(--muted);
+  font-size: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5px 0 5px 7px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.subjectContent {
+  padding: 9px 7px 12px 16px;
+  background: var(--inset);
+  border-radius: 8px;
+  margin: 4px 0 8px;
+}
+.subjectProgress {
+  font-size: 9px;
+  color: var(--accent);
+  line-height: 1.7;
+  margin: 0 0 9px;
+}
+.topics {
+  list-style: decimal;
+  margin: 0;
+  padding-left: 17px;
+  font-size: 11px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.topics > li {
+  padding-left: 2px;
+  margin-bottom: 5px;
+}
+.emptyTopics,
+.emptyGroup {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+}
+.emptyTopics {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+.emptyTopics > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.emptyGroup {
+  padding: 5px 4px 8px;
+}

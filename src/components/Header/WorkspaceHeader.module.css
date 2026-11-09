@@ -1,0 +1,163 @@
+.header {
+  position: relative;
+  height: var(--header-height);
+  margin-bottom: 16px;
+  background: var(--glass);
+  backdrop-filter: blur(28px);
+  border: 1px solid var(--glass-border);
+  border-radius: 15px;
+  box-shadow: var(--shadow-panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 20px;
+}
+.navigation {
+  margin-right: 170px;
+}
+.accountActions {
+  position: absolute;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  max-width: 165px;
+}
+.accountActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text);
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 10px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.accountActions button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.accountActions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.accountActions .accountPrimary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.accountEmail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 9px;
+  max-width: 76px;
+}
+.accountStatus {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 12px;
+  padding: 7px 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 10px;
+  z-index: 10;
+}
+.sessionShortcut {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid var(--control-border);
+  border-radius: 18px;
+  background: var(--control);
+  color: var(--accent);
+  font-size: 11px;
+  padding: 10px 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.header[data-studying="true"] {
+  padding-top: 60px;
+}
+.navigation {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 10px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.navigation a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 82px;
+  padding: 7px 10px;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 10px;
+  white-space: nowrap;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.navigation a:hover {
+  background: var(--control);
+  transform: translateY(-1px);
+}
+.navigation a[aria-current="page"] {
+  background: var(--control);
+  font-weight: 600;
+}
+.navigation svg {
+  flex-shrink: 0;
+}
+@media (max-width: 700px) {
+  .header {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .navigation {
+    justify-content: flex-start;
+    gap: 2px;
+    width: calc(100% - 80px);
+    max-width: calc(100% - 80px);
+    margin-right: auto;
+  }
+  .navigation a {
+    min-width: 68px;
+    padding: 7px 5px;
+    font-size: 8px;
+  }
+  .navigation a svg {
+    width: 22px;
+    height: 22px;
+  }
+  .accountActions {
+    right: 5px;
+    gap: 4px;
+    max-width: 76px;
+  }
+  .accountActions button {
+    width: 32px;
+    height: 34px;
+    padding: 5px;
+  }
+  .accountActions button span,
+  .accountEmail {
+    display: none;
+  }
+}

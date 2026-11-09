@@ -1,0 +1,63 @@
+.accountState {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.accountIdentity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--inset);
+  border-radius: 12px;
+}
+.accountIdentity > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: var(--control);
+  border-radius: 50%;
+  color: var(--accent);
+}
+.accountIdentity > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.accountIdentity strong {
+  font-size: 13px;
+}
+.accountIdentity small {
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.accountState > p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.accountLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+.accountLinks button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.accountLinks button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}

@@ -1,0 +1,331 @@
+.panel {
+  padding: 24px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background: var(--calendar-surface);
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 20px;
+}
+.monthNavigation {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr) 105px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.monthNavigation h1 {
+  text-transform: capitalize;
+  text-align: center;
+  font-size: clamp(19px, 1.8vw, 30px);
+  font-weight: 650;
+  letter-spacing: -0.6px;
+  margin: 0;
+  line-height: 1.3;
+}
+.monthNavigation button {
+  padding: 10px 8px;
+  border-radius: 7px;
+  font-size: 12px;
+  background: var(--control);
+}
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  padding: 5px 0 12px;
+}
+.weekdays > span {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  padding-left: 10px;
+}
+.weekdays > span[data-weekend="true"] {
+  color: var(--faint);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-rows: repeat(var(--calendar-rows), minmax(50px, 1fr));
+  border-left: 1px solid var(--separator);
+  border-top: 1px solid var(--separator);
+  flex: 1;
+}
+.day {
+  border-right: 1px solid var(--separator);
+  border-bottom: 1px solid var(--separator);
+  position: relative;
+  min-width: 0;
+  transition: background 0.2s;
+}
+.day[data-outside="true"] {
+  opacity: 0.38;
+}
+.day[data-today="true"] {
+  background: var(--today);
+}
+.day[data-today="true"]:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid #1671db;
+}
+.day[data-progress="partial"] {
+  background: #a2bd7314;
+}
+.day[data-progress="complete"] {
+  background: #a2bd733b;
+}
+.daySelect {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 9px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+.daySelect > span {
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+}
+.day[data-today="true"] .daySelect > span {
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+}
+.daySelect small {
+  font-size: 5px;
+  color: var(--accent);
+  letter-spacing: 0.6px;
+}
+.day:hover {
+  background: var(--inset);
+}
+.dayRecords {
+  padding: 0 4px 6px;
+}
+.activity {
+  background: color-mix(in srgb, var(--activity-color) 12%, transparent);
+  border-left: 2px solid var(--activity-color);
+  padding: 4px;
+  border-radius: 3px;
+  font-size: 7px;
+  margin-bottom: 3px;
+  cursor: grab;
+}
+.activity > span {
+  display: block;
+  opacity: 0.7;
+  font-size: 6px;
+  margin-bottom: 2px;
+}
+.activity > strong {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  white-space: nowrap;
+}
+.studied {
+  font-size: 7px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+}
+.studied > span {
+  height: 3px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.more {
+  font-size: 7px;
+  color: var(--muted);
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0 17px;
+}
+.legend {
+  display: flex;
+  gap: 12px;
+}
+.legend > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 7px;
+  color: var(--muted);
+}
+.legend i {
+  width: 5px;
+  height: 5px;
+  background: #c7ccc4;
+  border-radius: 50%;
+}
+.legend > span:nth-child(2) i {
+  background: #bdcba9;
+}
+.legend > span:nth-child(3) i {
+  background: #7d986b;
+}
+.footer > button {
+  font-size: 9px;
+  color: var(--muted);
+  background: var(--control);
+  border: 1px solid var(--control-border);
+  border-radius: 7px;
+  padding: 5px 11px;
+  cursor: pointer;
+}
+.todayStrip {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  padding: 13px 14px;
+  background: var(--inset);
+  border: 1px solid var(--control-border);
+  border-radius: 14px;
+}
+.sunIcon {
+  color: #9c956b;
+}
+.todayStrip > div:nth-child(2) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+}
+.todayStrip strong {
+  font-size: 10px;
+  font-weight: 550;
+}
+.todayStrip span {
+  font-size: 8px;
+  color: var(--muted);
+}
+.todayStrip button {
+  width: 28px;
+  height: 28px;
+}
+.dayTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.timelineRecord {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--inset);
+  border-radius: 12px;
+  padding: 13px;
+  color: var(--accent);
+}
+.timelineRecord > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.timelineRecord strong {
+  font-size: 12px;
+  color: var(--text);
+}
+.timelineRecord span {
+  font-size: 11px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.completedDot {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.yearGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.yearGrid > button {
+  border: 1px solid var(--separator);
+  border-radius: 14px;
+  background: var(--inset);
+  padding: 15px;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+.yearGrid strong {
+  font-size: 12px;
+  text-transform: capitalize;
+}
+.yearGrid span {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .panel {
+    padding: 22px 12px 15px;
+  }
+  .monthNavigation {
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    gap: 8px;
+  }
+  .monthNavigation h1 {
+    font-size: 22px;
+  }
+  .monthNavigation button {
+    padding: 9px 5px;
+  }
+  .monthNavigation button > span {
+    display: none;
+  }
+  .toolbar {
+    gap: 15px;
+  }
+  .daySelect {
+    padding: 8px 4px;
+  }
+  .daySelect small {
+    display: none;
+  }
+  .legend {
+    gap: 7px;
+  }
+  .legend > span {
+    font-size: 7px;
+  }
+  .grid {
+    grid-template-rows: repeat(var(--calendar-rows), minmax(65px, 1fr));
+  }
+  .todayStrip strong {
+    font-size: 10px;
+  }
+}

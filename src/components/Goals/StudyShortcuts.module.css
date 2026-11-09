@@ -1,0 +1,139 @@
+.shortcuts {
+  width: 100%;
+  padding: 18px 6px 8px;
+  box-sizing: border-box;
+}
+
+.shortcuts h3 {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 9px;
+  color: var(--text-primary, #171717);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.shortcuts h3 svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke-width: 1.7;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-left: 20px;
+}
+
+.shortcutItem,
+.addShortcut {
+  display: grid;
+  place-items: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.shortcutItem {
+  background: #ffffff;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.shortcutItem:hover,
+.addShortcut:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.14);
+}
+
+.shortcutLogo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  box-sizing: border-box;
+  object-fit: contain;
+}
+
+.shortcutItem[data-kind="questions"] {
+  background: #ff681b;
+}
+
+.shortcutItem[data-kind="courses"] {
+  background: #171a4b;
+}
+
+.shortcutItem[data-kind="youtube"],
+.shortcutItem[data-kind="drive"] {
+  background: #ffffff;
+}
+
+.addShortcut {
+  background: #929292;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.addShortcut svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 2.5;
+}
+
+.addShortcut:hover {
+  background: #7c7c7c;
+}
+
+.shortcutFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) 30px;
+  align-items: end;
+  gap: 10px;
+}
+
+.shortcutFields button {
+  margin-bottom: 4px;
+  color: var(--error);
+}
+
+@media (max-width: 480px) {
+  .shortcuts {
+    padding: 14px 4px 8px;
+  }
+
+  .links {
+    padding-left: 18px;
+    gap: 9px;
+  }
+
+  .shortcutFields {
+    grid-template-columns: minmax(0, 1fr) 30px;
+  }
+
+  .shortcutFields > label:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 340px) {
+  .links {
+    gap: 7px;
+    padding-left: 12px;
+  }
+}

@@ -1,0 +1,44 @@
+.panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow: auto;
+}
+.overview {
+  position: relative;
+  padding-top: 4px;
+}
+.panel > section:last-of-type {
+  margin-top: auto;
+}
+.overview > button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: transparent;
+  border: 0;
+}
+.overview h2 {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 10px 0 0;
+}
+.goalDetails {
+  margin: 26px 8px 0;
+  font-size: 13px;
+  line-height: 1.25;
+}
+.goalDetails p {
+  margin: 0;
+}
+.goalDetails strong {
+  display: block;
+  margin-top: 5px;
+  font-size: clamp(25px, 2.3vw, 34px);
+  font-weight: 750;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+}

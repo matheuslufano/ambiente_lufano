@@ -1,0 +1,102 @@
+.panel {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tomato {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1.1;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+}
+.dragHint {
+  font-size: 9px;
+  color: var(--muted);
+  margin: 3px 0;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 8px 0;
+}
+.controls button {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: #ff101c;
+  color: white;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+.timer {
+  font-size: 23px;
+  font-variant-numeric: tabular-nums;
+  line-height: 28px;
+  background: #ff424b;
+  border-radius: 18px;
+  color: white;
+  padding: 0 12px;
+  letter-spacing: 1px;
+}
+.timer > span {
+  padding: 0 3px;
+}
+.options {
+  width: 100%;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.options summary {
+  cursor: pointer;
+}
+.durationLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+}
+.durationLabel input {
+  width: 100%;
+  accent-color: #ff2635;
+}
+.cycleDots,
+.cycleLabel {
+  display: none;
+}
+.integration {
+  font-size: 9px;
+  color: var(--muted);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 12px;
+}
+.integration svg {
+  flex-shrink: 0;
+}
+.integration p {
+  margin: 0;
+  text-align: left;
+}
+.message {
+  font-size: 11px;
+  color: var(--accent);
+}
+.fallbackTomato {
+  display: grid;
+  place-items: center;
+  color: #e21c2c;
+}
+.fallbackTomato span {
+  font-size: 10px;
+}

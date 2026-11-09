@@ -1,0 +1,76 @@
+.imageSettings {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+.preview {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  background: var(--inset);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  overflow: hidden;
+  border: 1px solid var(--control-border);
+}
+.preview[data-kind="avatar"] {
+  border-radius: 50%;
+}
+.preview img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.actions {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.actions label.upload {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text);
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: var(--control);
+  border: 1px solid var(--control-border);
+  position: relative;
+}
+.upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+.upload:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.upload[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: wait;
+}
+.actions button {
+  padding: 5px 9px;
+  font-size: 9px;
+}
+.actions > p {
+  font-size: 9px;
+  color: var(--muted);
+  margin: 0;
+}
+.message {
+  grid-column: 1/-1;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 0;
+}

@@ -1,0 +1,283 @@
+.dockArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.dock {
+  width: 100%;
+  min-height: 60px;
+  background: #d8d8d8;
+  backdrop-filter: blur(28px) saturate(125%);
+  border: 1px solid #ffffff80;
+  border-radius: 9px;
+  box-shadow:
+    0 12px 32px #23190d20,
+    inset 0 1px 1px #fff5;
+  padding: 5px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 15px;
+}
+.dockButton {
+  position: relative;
+  border: 0;
+  background: transparent;
+  padding: 0 3px 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.dockButton:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+.appIcon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: #202020;
+}
+.appIcon > svg {
+  width: 38px;
+  height: 38px;
+}
+.activeDot {
+  position: absolute;
+  bottom: -1px;
+  width: 3px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  font-size: 10px;
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  white-space: nowrap;
+  box-shadow: 0 3px 12px #0001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  color: var(--text);
+}
+.dockButton:hover .tooltip,
+.dockButton:focus-visible .tooltip {
+  opacity: 1;
+}
+.startForm {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  align-items: center;
+}
+.startForm > label {
+  flex: 1;
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.startForm select {
+  border: 1px solid var(--control-border);
+  border-radius: 9px;
+  background: var(--control);
+  padding: 10px 8px;
+  color: var(--text);
+  font-size: 11px;
+  max-width: 100%;
+  width: 100%;
+  outline-offset: 4px;
+}
+.sessionControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.sessionControls > div {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+.sessionControls strong {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sessionControls span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.sessionControls time {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.dock:has(.startForm),
+.dock:has(.sessionControls) {
+  border-radius: 24px;
+  background: var(--surface);
+}
+.startForm button:last-child {
+  padding: 10px 14px;
+}
+.bookOptions {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  display: flex;
+  gap: 8px;
+  z-index: 8;
+}
+.bookOptions button {
+  background: var(--surface);
+  box-shadow: 0 7px 25px #2a372525;
+}
+.activeIsland {
+  position: fixed;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 24px;
+  background: #20271feb;
+  backdrop-filter: blur(20px);
+  color: white;
+  padding: 12px 17px;
+  box-shadow: 0 7px 30px #0002;
+  max-width: calc(100% - 24px);
+}
+.activeIsland > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 150px;
+}
+.activeIsland strong {
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.activeIsland > div > span {
+  font-size: 8px;
+  color: #bbc7b6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.activeIsland time {
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  color: #d3e6ba;
+}
+.activeIsland button {
+  background: #ffffff12;
+  border: 0;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+}
+.pulse {
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  background: #b9d795;
+  box-shadow: 0 0 0 4px #b9d79516;
+  flex-shrink: 0;
+}
+.pulse[data-paused="true"] {
+  background: #d7b495;
+}
+.sessionSummary {
+  padding: 16px;
+  background: var(--inset);
+  border-radius: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--accent);
+}
+.sessionSummary > span {
+  flex: 1;
+  font-size: 12px;
+}
+.sessionSummary strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 18px;
+}
+@media (max-width: 700px) {
+  .dockArea {
+    position: fixed;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    margin: 0;
+    width: calc(100% - 24px);
+  }
+  .dock {
+    padding: 10px 13px;
+    min-height: 74px;
+    border-radius: 25px;
+  }
+  .tools {
+    gap: 16px;
+  }
+  .appIcon {
+    width: 40px;
+    height: 40px;
+  }
+  .appIcon > svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .startForm {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .startForm select {
+    max-width: 105px;
+    font-size: 9px;
+  }
+  .startForm > label {
+    flex: 1;
+  }
+  .startForm button:last-child {
+    font-size: 10px;
+  }
+  .activeIsland {
+    gap: 9px;
+  }
+  .activeIsland > div {
+    max-width: 105px;
+  }
+  .activeIsland time {
+    font-size: 12px;
+  }
+}
