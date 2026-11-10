@@ -2,6 +2,7 @@ import { BookOpen, Fish, Gamepad2, Moon, Shirt } from "lucide-react";
 import styles from "./PetGame.module.css";
 export default function PetActions({
   busy,
+  active,
   onStudy,
   onFeed,
   onPlay,
@@ -9,6 +10,7 @@ export default function PetActions({
   onCustomize,
 }: {
   busy: boolean;
+  active: "study" | "feed" | "play" | "rest" | "customize";
   onStudy: () => void;
   onFeed: () => void;
   onPlay: () => void;
@@ -29,9 +31,17 @@ export default function PetActions({
           run: onCustomize,
         },
       ].map(({ id, label, icon: Icon, run }) => (
-        <button key={id} id={`pet-action-${id}`} disabled={busy} onClick={run}>
-          <Icon size={17} />
-          <span>{label}</span>
+        <button
+          key={id}
+          id={`pet-action-${id}`}
+          type="button"
+          aria-label={label}
+          aria-pressed={active === id}
+          title={label}
+          disabled={busy}
+          onClick={run}
+        >
+          <Icon size={29} strokeWidth={1.8} aria-hidden="true" />
         </button>
       ))}
     </div>

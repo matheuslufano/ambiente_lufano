@@ -50,8 +50,13 @@
 }
 
 .content[data-pet-expanded="true"] {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  padding: 18px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 8px;
   border-radius: 16px;
   background: var(--surface);
 }
@@ -69,21 +74,23 @@
 }
 
 .petClose {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 5;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  height: auto;
-  margin-bottom: 8px;
+  height: 28px;
+  margin: 0;
   overflow: visible;
 }
 
 .petClose button {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -100,6 +107,18 @@
 
 .content > div:not([hidden]) {
   animation: sidebar-reveal 0.2s ease-out;
+}
+
+.content[data-pet-expanded="true"] > div:not(.petClose):not([hidden]) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content[data-pet-expanded="true"] > div:not(.petClose):not([hidden]) > * {
+  min-height: 0;
 }
 
 @keyframes sidebar-reveal {

@@ -7,6 +7,7 @@ import {
   feedPet,
   initialPet,
   playWithPet,
+  buyOrEquipAccessory,
 } from "./petService";
 import type { StudySession } from "../types";
 beforeEach(async () => {
@@ -80,6 +81,28 @@ describe("transactional pet persistence", () => {
     const result = await Promise.allSettled([feedPet("fish"), feedPet("fish")]);
     expect(result.filter((r) => r.status === "fulfilled")).toHaveLength(1);
     expect((await db.petStates.get("lufi"))?.coins).toBe(0);
+  });
+  it("applies milk and juice purchases to the existing pet vitals", async () => {
+    await db.petStates.put({ ...initialPet(), coins: 33 });
+    await feedPet("milk");
+    const afterMilk = await db.petStates.get("lufi");
+    expect(afterMilk?.coins).toBe(18);
+    expect(afterMilk?.hunger).toBeCloseTo(100, 2);
+    expect(afterMilk?.energy).toBeCloseTo(90, 2);
+
+    await feedPet("juice");
+    const afterJuice = await db.petStates.get("lufi");
+    expect(afterJuice?.coins).toBe(0);
+    expect(afterJuice?.hunger).toBeCloseTo(100, 2);
+    expect(afterJuice?.energy).toBeCloseTo(100, 2);
+  });
+  it("buys and equips a new wardrobe accessory", async () => {
+    await db.petStates.put({ ...initialPet(), coins: 25 });
+    await buyOrEquipAccessory("bow");
+    const pet = await db.petStates.get("lufi");
+    expect(pet?.coins).toBe(0);
+    expect(pet?.owned).toContain("bow");
+    expect(pet?.equipped).toBe("bow");
   });
   it("cannot create coins by playing or by repeating the interaction cooldown", async () => {
     await db.petStates.put(initialPet());

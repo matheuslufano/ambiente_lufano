@@ -1,238 +1,195 @@
+import type { PointerEvent as ReactPointerEvent } from "react";
 import type { PetAction, PetRecord } from "../../types/pet";
-import { scenes } from "../../services/petService";
 import PetCharacter from "./PetCharacter";
 import styles from "./PetGame.module.css";
 import { sceneImage } from "../../assets/pet/manifest";
+
 export default function PetScene({
   pet,
   action,
+  environment,
+  look,
+  petPosition,
   onTouch,
+  onPetPointerDown,
+  onPetPointerMove,
+  onPetPointerUp,
+  onPetPointerLeave,
 }: {
   pet: PetRecord;
   action: PetAction;
+  environment: "study" | "feed" | "play" | "rest" | "customize";
+  look: { x: number; y: number };
+  petPosition: { x: number; y: number };
   onTouch: () => void;
+  onPetPointerDown: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onPetPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onPetPointerUp: () => void;
+  onPetPointerLeave: () => void;
 }) {
   const garden = pet.scene === "garden";
   const background = sceneImage(pet.scene);
   return (
-    <div id="pet-square-scene" className={styles.scene} data-scene={pet.scene}>
+    <div
+      id="pet-square-scene"
+      className={styles.scene}
+      data-scene={pet.scene}
+      data-environment={environment}
+    >
       {background ? (
         <img className={styles.scenery} src={background} alt="" />
       ) : (
         <svg
-          viewBox="0 0 400 400"
+          viewBox="0 0 400 580"
           className={styles.scenery}
+          preserveAspectRatio="xMidYMid slice"
           aria-hidden="true"
         >
-          <rect
-            width="400"
-            height="400"
-            fill={
-              garden
-                ? "#e4eedc"
-                : pet.scene === "study-room"
-                  ? "#e5eadd"
-                  : pet.scene === "library"
-                    ? "#eadfcf"
-                    : "#f3e9dc"
-            }
-          />
-          <rect
-            y="265"
-            width="400"
-            height="135"
-            fill={garden ? "#a9c59a" : "#cfb394"}
-          />
-          <path
-            d="M0 265h400M0 325h400m-280-60v135m160-135v135"
-            stroke={garden ? "#99b989" : "#bca083"}
-            strokeWidth="2"
-          />
-          {garden ? (
-            <>
-              <circle cx="320" cy="65" r="28" fill="#e8d791" />
-              <path
-                d="M42 270V116m310 154V148"
-                stroke="#aa8d68"
-                strokeWidth="13"
-              />
-              <circle cx="44" cy="110" r="55" fill="#95b087" />
-              <circle cx="352" cy="125" r="53" fill="#afc19a" />
-              <path
-                d="M20 294q15-20 30 0m285 28q20-26 40 0"
-                stroke="#7f9f78"
-                fill="none"
-              />
-            </>
-          ) : (
-            <>
-              <rect
-                x="140"
-                y="33"
-                width="118"
-                height="127"
-                rx="40"
-                fill="#c5d9d4"
-                stroke="#fff8e8"
-                strokeWidth="8"
-              />
-              <path
-                d="M199 33v127m-59-64h118"
-                stroke="#fff8e8"
-                strokeWidth="5"
-              />
-              <path
-                d="m140 45 16 110m100-110-16 110"
-                stroke="#d8bfaa"
-                strokeWidth="14"
-              />
-              {pet.scene === "library" ? (
-                <>
-                  <rect
-                    x="14"
-                    y="49"
-                    width="93"
-                    height="212"
-                    rx="4"
-                    fill="#a28569"
-                  />
-                  <path
-                    d="M14 115h93M14 185h93"
-                    stroke="#80664f"
-                    strokeWidth="8"
-                  />
-                  {[27, 45, 63, 81].map((x, i) => (
-                    <g key={x}>
-                      <rect
-                        x={x}
-                        y={68 + (i % 2) * 7}
-                        width="12"
-                        height={42 - (i % 2) * 7}
-                        fill={["#7a9c8a", "#cb9b78", "#97a9b6", "#c5b58e"][i]}
-                      />
-                      <rect
-                        x={x}
-                        y={135 + (i % 2) * 7}
-                        width="12"
-                        height={43 - (i % 2) * 7}
-                        fill={["#c5b58e", "#97a9b6", "#cb9b78", "#7a9c8a"][i]}
-                      />
-                    </g>
-                  ))}
-                </>
-              ) : pet.scene === "study-room" ? (
-                <>
-                  <rect
-                    x="28"
-                    y="166"
-                    width="67"
-                    height="11"
-                    rx="2"
-                    fill="#7f9b89"
-                  />
-                  <rect
-                    x="22"
-                    y="180"
-                    width="80"
-                    height="12"
-                    rx="2"
-                    fill="#be9778"
-                  />
-                  <rect
-                    x="30"
-                    y="195"
-                    width="65"
-                    height="11"
-                    rx="2"
-                    fill="#a2acb9"
-                  />
-                  <path
-                    d="M25 213h75m-65 0v56m54-56v56"
-                    stroke="#aa896c"
-                    strokeWidth="7"
-                  />
-                  <rect
-                    x="26"
-                    y="57"
-                    width="72"
-                    height="65"
-                    rx="4"
-                    fill="#fff6df"
-                    stroke="#cfbd9f"
-                  />
-                  <path
-                    d="M38 77h45m-45 12h35m-35 12h39"
-                    stroke="#b9c5ad"
-                    strokeWidth="3"
-                  />
-                </>
-              ) : (
-                <>
-                  <rect
-                    x="16"
-                    y="210"
-                    width="92"
-                    height="44"
-                    rx="10"
-                    fill="#c1a0a0"
-                  />
-                  <rect
-                    x="16"
-                    y="184"
-                    width="92"
-                    height="31"
-                    rx="10"
-                    fill="#e1cfbf"
-                  />
-                  <path
-                    d="M27 254v20m67-20v20"
-                    stroke="#a78c73"
-                    strokeWidth="7"
-                  />
-                </>
-              )}
-              <rect
-                x="288"
-                y="207"
-                width="98"
-                height="14"
-                rx="4"
-                fill="#aa896c"
-              />
-              <path d="M300 221v55m72-55v55" stroke="#92765e" strokeWidth="6" />
-              <rect
-                x="316"
-                y="150"
-                width="48"
-                height="41"
-                rx="4"
-                fill="#7b9591"
-              />
-              <path d="M340 191v15" stroke="#637b77" strokeWidth="5" />
-              <path
-                d="M302 205v-57l-13-20"
-                stroke="#bda463"
-                strokeWidth="5"
-                fill="none"
-              />
-              <path d="m274 126 27-8 5 20h-38Z" fill="#d7bc79" />
-            </>
+          <defs>
+            <linearGradient id="room-wall" x2="0" y2="1">
+              <stop stopColor={garden ? "#c8e7e2" : "#dcc6d1"} />
+              <stop offset="1" stopColor={garden ? "#a9cfc5" : "#b89aaf"} />
+            </linearGradient>
+            <linearGradient id="room-sky" x2="0" y2="1">
+              <stop stopColor="#79cafa" />
+              <stop offset="1" stopColor="#d2f0f7" />
+            </linearGradient>
+            <linearGradient id="room-floor" x2="0" y2="1">
+              <stop stopColor="#e9a057" />
+              <stop offset="1" stopColor="#bd6538" />
+            </linearGradient>
+            <linearGradient id="rug" x2="0" y2="1">
+              <stop stopColor="#fff0d6" />
+              <stop offset="1" stopColor="#eabf98" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="580" fill="url(#room-wall)" />
+          <rect x="55" y="24" width="270" height="285" rx="4" fill="#8a4930" />
+          <rect x="64" y="33" width="252" height="267" fill="url(#room-sky)" />
+          <path d="M64 205q55-55 102 0t150-10v105H64Z" fill="#91d3c8" opacity=".8" />
+          <path d="M64 238q62-54 123-8t129-12v82H64Z" fill="#76b886" />
+          <g fill="#fff8e8" opacity=".82">
+            <ellipse cx="123" cy="88" rx="31" ry="12" />
+            <ellipse cx="144" cy="83" rx="22" ry="15" />
+            <ellipse cx="251" cy="119" rx="26" ry="10" />
+            <ellipse cx="267" cy="114" rx="18" ry="13" />
+          </g>
+          <g fill="#679b42">
+            <circle cx="79" cy="40" r="29" />
+            <circle cx="112" cy="34" r="23" />
+            <circle cx="292" cy="47" r="30" />
+            <circle cx="316" cy="77" r="26" />
+            <circle cx="84" cy="178" r="25" />
+            <circle cx="288" cy="193" r="29" />
+          </g>
+          <g fill="#9dc63d">
+            <ellipse cx="74" cy="48" rx="15" ry="7" transform="rotate(32 74 48)" />
+            <ellipse cx="104" cy="63" rx="17" ry="7" transform="rotate(-27 104 63)" />
+            <ellipse cx="287" cy="58" rx="16" ry="7" transform="rotate(-30 287 58)" />
+            <ellipse cx="307" cy="106" rx="17" ry="7" transform="rotate(32 307 106)" />
+            <ellipse cx="87" cy="160" rx="16" ry="7" transform="rotate(-35 87 160)" />
+          </g>
+          <path d="M190 33v267M64 166h252" stroke="#a65c35" strokeWidth="12" />
+          <path d="M196 33v267M64 172h252" stroke="#f7bd78" strokeWidth="3" opacity=".8" />
+          <path d="M53 19h274M53 309h274" stroke="#75412f" strokeWidth="9" />
+          <path d="M48 22q10 85 5 180t3 112l36-5q-10-60 6-135t-3-145Z" fill="#f3d9d0" />
+          <path d="M327 23q-9 85-4 177t-4 112l-38-4q12-69-5-137t2-145Z" fill="#f3d9d0" />
+          <path d="M55 20q26 30 18 98m246-98q-28 29-19 97" fill="none" stroke="#fff4e8" strokeWidth="7" opacity=".7" />
+          <rect y="317" width="400" height="111" fill="url(#room-wall)" />
+          <path d="M0 426h400" stroke="#854d37" strokeWidth="12" />
+          <rect y="438" width="400" height="142" fill="url(#room-floor)" />
+          <g stroke="#9e5534" strokeWidth="3" opacity=".55">
+            <path d="M0 469h400M0 509h400M0 550h400" />
+            <path d="M76 438v42m142-42v42m120-42v42M22 482v27m131-27v27m144-27v27M86 523v27m153-27v27m116-27v27" />
+          </g>
+          <g>
+            <rect x="0" y="143" width="65" height="287" rx="5" fill="#9b5631" />
+            <rect x="8" y="153" width="48" height="258" fill="#bd7745" />
+            <path d="M8 237h48m-48 83h48" stroke="#74432e" strokeWidth="7" />
+            <rect x="14" y="182" width="10" height="49" rx="2" fill="#8b7098" />
+            <rect x="27" y="174" width="10" height="57" rx="2" fill="#d5aa62" />
+            <rect x="40" y="188" width="10" height="43" rx="2" fill="#608b83" />
+            <rect x="8" y="356" width="48" height="40" rx="5" fill="#d69a6b" />
+            <path d="M22 369h21" stroke="#905a3e" strokeWidth="3" />
+          </g>
+          <g>
+            <path d="M94 394q-2-74-29-119m29 119q24-72 60-86m-60 86q-42-55-64-54m64 54q27-45 58-43" fill="none" stroke="#517b3d" strokeWidth="8" strokeLinecap="round" />
+            <path d="M64 275q-21-26-42-5 18 25 42 5m34-15q4-33 34-32 1 27-34 32m-31 34q-27-23-44-2 17 23 44 2m64-27q25-25 46-7-18 25-46 7" fill="#78a94d" />
+            <path d="M52 379h86l-10 48H62Z" fill="#d49a6d" />
+            <ellipse cx="95" cy="379" rx="43" ry="10" fill="#b87953" />
+          </g>
+          <g>
+            <rect x="286" y="337" width="114" height="16" rx="4" fill="#a85f37" />
+            <path d="M299 352v91m87-91v91" stroke="#875035" strokeWidth="10" />
+            <rect x="305" y="303" width="48" height="34" rx="5" fill="#d3893f" />
+            <path d="M311 303v-42m14 42v-53m14 53v-39" stroke="#517ca2" strokeWidth="5" strokeLinecap="round" />
+            <path d="M355 330h39" stroke="#f0c77c" strokeWidth="8" />
+          </g>
+          <ellipse cx="205" cy="535" rx="207" ry="79" fill="url(#rug)" />
+          <ellipse cx="205" cy="535" rx="193" ry="66" fill="none" stroke="#f9d5af" strokeWidth="7" strokeDasharray="3 8" />
+          {environment === "feed" && (
+            <g>
+              <rect x="244" y="350" width="145" height="22" rx="7" fill="#b86c43" />
+              <path d="M259 372v48m112-48v48" stroke="#875035" strokeWidth="9" />
+              <rect x="266" y="322" width="41" height="27" rx="7" fill="#f3d9b8" />
+              <path d="M306 328q16 0 7 15h-7" fill="none" stroke="#8a5f47" strokeWidth="4" />
+              <ellipse cx="335" cy="347" rx="18" ry="7" fill="#f7e9d8" />
+            </g>
           )}
-          <ellipse
-            cx="200"
-            cy="336"
-            rx="112"
-            ry="39"
-            fill={garden ? "#91b185" : "#dfcfae"}
-          />
-          <ellipse
-            cx="201"
-            cy="344"
-            rx="69"
-            ry="13"
-            fill="#71513b"
-            opacity=".12"
-          />
+          {environment === "play" && (
+            <g>
+              <g transform="translate(0 -150)">
+                <g className={styles.playToyBall}>
+                  <circle cx="88" cy="469" r="25" fill="#e58c75" stroke="#a9574f" strokeWidth="4" />
+                  <path d="M68 458q20 23 40 4m-37 18q20-22 37 4m-34-31q12 18 2 38" fill="none" stroke="#fff0d4" strokeWidth="4" strokeLinecap="round" />
+                  <circle cx="88" cy="469" r="5" fill="#f3cf83" />
+                  <ellipse cx="88" cy="497" rx="25" ry="6" fill="#75513d" opacity=".18" />
+                </g>
+              </g>
+              <g transform="translate(0 -150)">
+                <g className={styles.playToyFish}>
+                  <ellipse cx="301" cy="473" rx="27" ry="17" fill="#f2bc62" stroke="#b57a39" strokeWidth="4" />
+                  <path d="m278 473-20-15v30Z" fill="#e88e71" stroke="#b57a39" strokeWidth="4" strokeLinejoin="round" />
+                  <path d="m296 460 8-11 9 15" fill="#f4d28a" stroke="#b57a39" strokeWidth="3" strokeLinejoin="round" />
+                  <circle cx="311" cy="469" r="3" fill="#513e34" />
+                  <path d="M289 467q9 7 0 14" fill="none" stroke="#fff1d9" strokeWidth="3" />
+                  <ellipse cx="300" cy="497" rx="28" ry="6" fill="#75513d" opacity=".18" />
+                </g>
+              </g>
+              <g transform="translate(180 -150)">
+                <g className={styles.playToyFeather}>
+                  <path d="M167 495q-19-40 7-68 23 31-7 68Z" fill="#83b79a" stroke="#4d806a" strokeWidth="4" />
+                  <path d="m166 493 11-46m-9 29-11-13m14 4 12-10" fill="none" stroke="#f1f0c5" strokeWidth="3" strokeLinecap="round" />
+                  <path d="m162 496-9 10m10-9 3 12" stroke="#b97953" strokeWidth="4" strokeLinecap="round" />
+                  <ellipse cx="166" cy="514" rx="17" ry="5" fill="#75513d" opacity=".16" />
+                </g>
+              </g>
+            </g>
+          )}
+          {environment === "rest" && (
+            <g>
+              <rect x="112" y="374" width="190" height="73" rx="18" fill="#8396bd" />
+              <rect x="124" y="362" width="70" height="35" rx="15" fill="#f2e7d8" />
+              <path d="M119 430h177" stroke="#63789e" strokeWidth="9" />
+              <path d="M345 68a22 22 0 1 0 22 28 20 20 0 0 1-22-28Z" fill="#fff0bd" />
+            </g>
+          )}
+          {environment === "customize" && (
+            <g>
+              <rect x="276" y="166" width="110" height="205" rx="7" fill="#a85f37" />
+              <rect x="286" y="177" width="90" height="183" rx="4" fill="#d08b56" />
+              <path d="M331 178v181" stroke="#8d4e34" strokeWidth="5" />
+              <circle cx="322" cy="268" r="4" fill="#f3d9a8" />
+              <circle cx="342" cy="268" r="4" fill="#f3d9a8" />
+              <path d="M292 216h33m14 0h32" stroke="#efc68f" strokeWidth="5" />
+            </g>
+          )}
+          {pet.scene === "garden" && (
+            <g fill="#f1d77e" opacity=".85">
+              <circle cx="355" cy="95" r="22" />
+              <path d="M355 57v-13m0 102v-13m-38-38h-13m102 0h-13m-65-27-9-9m72 72-9-9m0-54 9-9m-72 72 9-9" stroke="#f1d77e" strokeWidth="5" />
+            </g>
+          )}
         </svg>
       )}
       <button
@@ -240,11 +197,24 @@ export default function PetScene({
         className={styles.characterButton}
         aria-label={`Fazer carinho em ${pet.name}`}
         onClick={onTouch}
+        onPointerDown={onPetPointerDown}
+        onPointerMove={onPetPointerMove}
+        onPointerUp={onPetPointerUp}
+        onPointerLeave={onPetPointerLeave}
+        style={{ left: `${petPosition.x}%`, top: `${petPosition.y}%` }}
       >
-        <PetCharacter action={action} accessory={pet.equipped} />
+        <PetCharacter action={action} accessory={pet.equipped} look={look} />
       </button>
       <span className={styles.sceneLabel}>
-        {scenes.find((scene) => scene.id === pet.scene)?.name}
+        {environment === "study"
+          ? "Cantinho de estudos"
+          : environment === "feed"
+            ? "Cozinha"
+            : environment === "play"
+              ? "Sala de brincar"
+              : environment === "rest"
+                ? "Quarto"
+                : "Guarda-roupa"}
       </span>
     </div>
   );

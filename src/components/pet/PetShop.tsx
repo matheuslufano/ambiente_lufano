@@ -1,8 +1,39 @@
-import { Coffee, Fish } from "lucide-react";
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { foods } from "../../services/petService";
 import { petLevel } from "../../services/rewardService";
 import type { PetRecord } from "../../types/pet";
 import styles from "./PetGame.module.css";
+
+const foodEmojis: Record<string, string> = {
+  sandwich: "🥪",
+  fish: "🐟",
+  fruit: "🍎",
+  milk: "🥛",
+  juice: "🧃",
+  special: "🍲",
+};
+
+const foodOptions = foods.map((food) => ({
+  ...food,
+  emoji: foodEmojis[food.id] ?? "🍽️",
+  coffee: false,
+}));
+const selections = [
+  foodOptions[0],
+  {
+    id: "coffee",
+    name: "Café",
+    emoji: "☕",
+    price: 0,
+    hunger: 0,
+    energy: 0,
+    level: 1,
+    coffee: true,
+  },
+  ...foodOptions.slice(1),
+];
+
 export default function PetShop({
   pet,
   busy,
@@ -14,35 +45,72 @@ export default function PetShop({
   onFeed: (id: string) => void;
   onCoffee: () => void;
 }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const selected = selections[selectedIndex];
+  const canOffer =
+    selected.coffee ||
+    (pet.coins >= selected.price &&
+      petLevel(pet.xp).level >= selected.level);
+
+  const changeSelection = (direction: -1 | 1) => {
+    setSelectedIndex(
+      (current) => (current + direction + selections.length) % selections.length,
+    );
+  };
+
   return (
-    <section id="pet-food-shop" className={styles.shop}>
-      <h4>Um carinho em forma de comida</h4>
-      {foods.map((food) => (
-        <button
-          id={`pet-buy-food-${food.id}`}
-          key={food.id}
-          disabled={
-            busy ||
-            pet.coins < food.price ||
-            petLevel(pet.xp).level < food.level
-          }
-          onClick={() => onFeed(food.id)}
-        >
-          <Fish size={14} />
-          <span>
-            {food.name}
-            <small>
-              +{food.hunger} alimentação · nível {food.level}
-            </small>
-          </span>
-          <strong>{food.price} moedas</strong>
-        </button>
-      ))}
-      <button id="pet-coffee-animation" disabled={busy} onClick={onCoffee}>
-        <Coffee size={14} />
-        <span>
-          Pausinha com café<small>Interação visual, sem moedas ou XP</small>
+    <section
+      id="pet-food-shop"
+      className={styles.foodCarousel}
+      role="group"
+      aria-label="Escolher alimento para a Lufi"
+    >
+      <button
+        className={styles.foodArrow}
+        type="button"
+        aria-label="Opção de comida anterior"
+        onClick={() => changeSelection(-1)}
+        disabled={busy}
+      >
+        <ChevronLeft size={25} fill="currentColor" />
+      </button>
+      <button
+        id={`pet-buy-food-${selected.id}`}
+        className={styles.foodPreview}
+        type="button"
+        aria-label={
+          selected.coffee
+            ? "Tomar uma pausa com café"
+            : `Oferecer ${selected.name} por ${selected.price} moedas`
+        }
+        title={
+          selected.coffee
+            ? "Pausinha com café"
+            : `${selected.name} · +${selected.hunger} alimentação · ${selected.price} moedas`
+        }
+        disabled={busy || !canOffer}
+        onClick={() =>
+          selected.coffee ? onCoffee() : onFeed(selected.id)
+        }
+      >
+        <span className={styles.foodPlate} aria-hidden="true">
+          <span className={styles.foodEmoji}>{selected.emoji}</span>
         </span>
+        <span className={styles.foodName}>{selected.name}</span>
+        <span className={styles.foodInfo}>
+          {selected.coffee
+            ? "Pausa visual"
+            : `${selected.price} moedas · +${selected.hunger} alimentação`}
+        </span>
+      </button>
+      <button
+        className={styles.foodArrow}
+        type="button"
+        aria-label="Próxima opção de comida"
+        onClick={() => changeSelection(1)}
+        disabled={busy}
+      >
+        <ChevronRight size={25} fill="currentColor" />
       </button>
     </section>
   );

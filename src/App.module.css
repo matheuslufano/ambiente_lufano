@@ -183,6 +183,13 @@
     height: min(700px, calc(100dvh - 220px));
     min-height: 390px;
   }
+  .workspace:has(:global(#pet-minigame)) {
+    padding-bottom: 24px;
+  }
+  .right:has(:global(#pet-minigame)) .contextWrapper > section {
+    height: min(520px, calc(100dvh - 260px));
+    min-height: 360px;
+  }
   .center {
     height: auto;
     min-height: 0;

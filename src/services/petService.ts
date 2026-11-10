@@ -12,8 +12,6 @@ import {
   validRewardRules,
 } from "./rewardService";
 export const foods = [
-  { id: "fruit", name: "Frutinha", price: 10, hunger: 18, energy: 5, level: 1 },
-  { id: "fish", name: "Peixe", price: 20, hunger: 35, energy: 10, level: 1 },
   {
     id: "sandwich",
     name: "Sanduíche",
@@ -22,6 +20,10 @@ export const foods = [
     energy: 20,
     level: 2,
   },
+  { id: "fish", name: "Peixe", price: 20, hunger: 35, energy: 10, level: 1 },
+  { id: "fruit", name: "Frutinha", price: 10, hunger: 18, energy: 5, level: 1 },
+  { id: "milk", name: "Leite", price: 15, hunger: 20, energy: 10, level: 1 },
+  { id: "juice", name: "Suco", price: 18, hunger: 18, energy: 15, level: 1 },
   {
     id: "special",
     name: "Comida especial",
@@ -35,6 +37,16 @@ export const accessories = [
   { id: "glasses", name: "Óculos de leitura", price: 40, level: 1 },
   { id: "headphones", name: "Fones de ouvido", price: 60, level: 2 },
   { id: "graduation", name: "Chapéu de formatura", price: 100, level: 3 },
+  { id: "bow", name: "Laço colorido", price: 25, level: 1 },
+  { id: "flower", name: "Flor no pelo", price: 30, level: 1 },
+  { id: "scarf", name: "Cachecol quentinho", price: 55, level: 2 },
+  { id: "crown", name: "Coroa brilhante", price: 120, level: 3 },
+  { id: "cape", name: "Capa de heroína", price: 160, level: 4 },
+  { id: "beret", name: "Boina charmosa", price: 45, level: 1 },
+  { id: "bandana", name: "Bandana de aventura", price: 50, level: 2 },
+  { id: "backpack", name: "Mochila de exploradora", price: 85, level: 2 },
+  { id: "halo", name: "Auréola brilhante", price: 110, level: 3 },
+  { id: "bowtie", name: "Gravata borboleta", price: 35, level: 1 },
 ] as const;
 export const scenes = [
   { id: "bedroom", name: "Quarto", minutes: 0, level: 1 },

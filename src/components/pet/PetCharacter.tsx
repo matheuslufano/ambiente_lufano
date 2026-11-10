@@ -12,9 +12,11 @@ import {
 export default function PetCharacter({
   action,
   accessory,
+  look,
 }: {
   action: PetAction;
   accessory: string | null;
+  look: { x: number; y: number };
 }) {
   const id = useId();
   const reading = action === "reading";
@@ -119,12 +121,14 @@ export default function PetCharacter({
             />
           ) : (
             <>
-              <ellipse cx="95" cy="104" rx="12" ry="15" fill="#342019" />
-              <ellipse cx="164" cy="104" rx="12" ry="15" fill="#342019" />
-              <circle cx="91" cy="99" r="4" fill="#fff" stroke="none" />
-              <circle cx="160" cy="99" r="4" fill="#fff" stroke="none" />
-              <circle cx="99" cy="109" r="2" fill="#fff" stroke="none" />
-              <circle cx="168" cy="109" r="2" fill="#fff" stroke="none" />
+              <g transform={`translate(${look.x * 0.6}, ${look.y * 0.4})`}>
+                <ellipse cx="95" cy="104" rx="12" ry="15" fill="#342019" />
+                <ellipse cx="164" cy="104" rx="12" ry="15" fill="#342019" />
+                <circle cx="91" cy="99" r="4" fill="#fff" stroke="none" />
+                <circle cx="160" cy="99" r="4" fill="#fff" stroke="none" />
+                <circle cx="99" cy="109" r="2" fill="#fff" stroke="none" />
+                <circle cx="168" cy="109" r="2" fill="#fff" stroke="none" />
+              </g>
             </>
           )}
         </g>

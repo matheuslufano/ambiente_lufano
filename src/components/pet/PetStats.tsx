@@ -1,4 +1,4 @@
-import { Battery, Heart, Fish, Sparkles } from "lucide-react";
+import { Battery, Heart, Apple, Sparkles } from "lucide-react";
 import type { PetRecord } from "../../types/pet";
 import { petLevel } from "../../services/rewardService";
 import styles from "./PetGame.module.css";
@@ -7,7 +7,7 @@ export default function PetStats({ pet }: { pet: PetRecord }) {
   return (
     <div id="pet-vital-stats" className={styles.stats}>
       {[
-        { id: "food", label: "Alimentação", value: pet.hunger, icon: Fish },
+        { id: "food", label: "Alimentação", value: pet.hunger, icon: Apple },
         {
           id: "happiness",
           label: "Felicidade",
@@ -22,11 +22,11 @@ export default function PetStats({ pet }: { pet: PetRecord }) {
           icon: Sparkles,
         },
       ].map(({ id, label, value, icon: Icon }) => (
-        <label key={id}>
+        <label key={id} data-stat={id}>
           <span>
-            <Icon size={11} />
             {label}
           </span>
+          <Icon className={styles.statIcon} size={29} strokeWidth={1.8} aria-hidden="true" />
           <progress
             id={`pet-stat-${id}`}
             max="100"
