@@ -1,3 +1,4 @@
+import { createAudioRecorder, finalizeAudioRecorder } from "../../lib/audioRecording";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -92,9 +93,14 @@ export default function StudyDock({
     null,
   );
   const [finishOpen, setFinishOpen] = useState(false);
+
   const [now, setNow] = useState(Date.now());
   const [questions, setQuestions] = useState(0);
   const [correct, setCorrect] = useState(0);
+  const latestAudio = useRef<Blob | null>(null);
+  const savingAudio = useRef(false);
+  const audioFinalized = useRef<Promise<void>>(Promise.resolve());
+  const [saving, setSaving] = useState(false);
   const [sessionAudio, setSessionAudio] = useState<Blob | null>(null);
   const [audioRecording, setAudioRecording] = useState(false);
   const [islandMessage, setIslandMessage] = useState("");
@@ -144,25 +150,31 @@ export default function StudyDock({
       if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder)
         throw new Error("Este navegador não oferece gravação de áudio.");
       const media = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(media);
+      const recorder = createAudioRecorder(media);
       const chunks: BlobPart[] = [];
       finishStream.current = media;
       finishRecorder.current = recorder;
       setSessionAudio(null);
+      latestAudio.current = null;
       setIslandMessage("");
       recorder.ondataavailable = (event) => {
         if (event.data.size) chunks.push(event.data);
       };
+      let resolveFinalized: () => void = () => {};
+      audioFinalized.current = new Promise<void>(resolve => { resolveFinalized = resolve; });
       recorder.onstop = () => {
         media.getTracks().forEach((track) => track.stop());
         finishStream.current = null;
         const recording = new Blob(chunks, {
           type: recorder.mimeType || "audio/webm",
         });
+        latestAudio.current = recording.size ? recording : null;
         if (recording.size) setSessionAudio(recording);
+        else setIslandMessage("A grava\u00e7\u00e3o ficou vazia. Verifique o microfone e tente novamente.");
         setAudioRecording(false);
+        resolveFinalized();
       };
-      recorder.start();
+      recorder.start(250);
       setAudioRecording(true);
     } catch (error) {
       setIslandMessage(
@@ -326,6 +338,7 @@ export default function StudyDock({
                 aria-label="Encerrar estudo"
                 onClick={() => {
                   setIslandMessage("");
+                  if (active.runningSince !== null) togglePause();
                   setFinishOpen(true);
                 }}
               >
@@ -388,6 +401,7 @@ export default function StudyDock({
                 onClick={() => {
                   setIslandMessage("");
                   setMode("dock");
+                  if (active.runningSince !== null) togglePause();
                   setFinishOpen(true);
                 }}
               >
@@ -565,7 +579,7 @@ export default function StudyDock({
         title="Mais um passo dado."
         description="Escreva um resumo ou grave uma nota de voz. Você pode informar zero questões."
         open={finishOpen && !!active}
-        onClose={() => setFinishOpen(false)}
+        onClose={() => { if (!saving) setFinishOpen(false); }}
       >
         <form
           className="form-stack"
@@ -573,42 +587,27 @@ export default function StudyDock({
             e.preventDefault();
             const data = new FormData(e.currentTarget);
             const summary = String(data.get("summary") || "").trim();
-            if (audioRecording) {
-              finishRecorder.current?.stop();
-              setIslandMessage(
-                "Gravação finalizada. Clique em salvar sessão novamente.",
-              );
-              return;
-            }
-            if (!summary && !sessionAudio) {
-              setIslandMessage(
-                "Escreva um resumo ou grave um áudio antes de salvar.",
-              );
-              return;
-            }
+            if (savingAudio.current) return;
+            savingAudio.current = true;
+            setSaving(true);
             void (async () => {
-              const completedSession = active;
-              if (!completedSession) return;
-              let audioSaveError = false;
-              if (sessionAudio) {
-                try {
-                  await db.audioNotes.add({
-                    id: crypto.randomUUID(),
-                    title: `Resumo em áudio · ${subjects.find((item) => item.id === completedSession.subjectId)?.name || "Estudo"}`,
+              try {
+                const completedSession = active;
+                if (!completedSession) return;
+                if (finishRecorder.current) await finalizeAudioRecorder(finishRecorder.current);
+                await audioFinalized.current;
+                const recording = latestAudio.current;
+                if (!summary && !recording) throw new Error("Escreva um resumo ou grave um audio antes de salvar.");
+                if (recording) {
+                  await db.audioNotes.put({
+                    id: `session-audio-${completedSession.startedAt}`,
+                    title: `Resumo em audio - ${subjects.find(item => item.id === completedSession.subjectId)?.name || "Estudo"}`,
                     subjectId: completedSession.subjectId,
+                    sessionStartedAt: completedSession.startedAt,
                     date: new Date().toISOString(),
-                    blob: sessionAudio,
+                    blob: recording,
                   });
-                } catch {
-                  audioSaveError = true;
-                  if (!summary) {
-                    setIslandMessage(
-                      "Não foi possível salvar o áudio. Tente gravar novamente ou escreva um resumo.",
-                    );
-                    return;
-                  }
                 }
-              }
               finish(
                 summary || "Resumo gravado em áudio na biblioteca de estudos.",
                 questions,
@@ -618,14 +617,15 @@ export default function StudyDock({
               setQuestions(0);
               setCorrect(0);
               setSessionAudio(null);
-              setIslandMessage(
-                audioSaveError
-                  ? "Sessão salva com o resumo escrito, mas não foi possível salvar o áudio."
-                  : "",
-              );
+              latestAudio.current = null;
+              setIslandMessage("");
+              } catch (error) {
+                setIslandMessage(error instanceof Error ? error.message : "Nao foi possivel salvar o audio. A gravacao foi mantida para tentar novamente.");
+              } finally { savingAudio.current = false; setSaving(false); }
             })();
           }}
         >
+          {islandMessage && <p id="session-recording-feedback" role="alert">{islandMessage}</p>}
           <div className={styles.sessionSummary}>
             <ClockIcon />
             <span>Tempo dedicado</span>
@@ -648,6 +648,7 @@ export default function StudyDock({
             </label>
             <GlassIconButton
               id="session-audio-record-button"
+              disabled={saving}
               type="button"
               aria-label={
                 audioRecording
@@ -702,7 +703,8 @@ export default function StudyDock({
             {questions ? Math.round((correct / questions) * 100) : 0}% de
             aproveitamento
           </p>
-          <GlassButton id="session-save-button" type="submit" variant="primary">
+          <GlassButton id="session-delete-from-finish" disabled={saving || audioRecording} type="button" onClick={() => { useStudyStore.setState({ active: null }); setFinishOpen(false); }}>Excluir sessão</GlassButton>
+          <GlassButton id="session-save-button" disabled={saving} type="submit" variant="primary">
             Salvar sessão
           </GlassButton>
         </form>

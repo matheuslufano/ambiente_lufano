@@ -1,3 +1,4 @@
+import { createAudioRecorder } from "../../lib/audioRecording";
 import { useEffect, useRef, useState } from "react";
 import { Mic, Pause, Play, Search, Square, Trash2 } from "lucide-react";
 import { db } from "../../lib/db";
@@ -82,7 +83,7 @@ export default function AudioPanel() {
         throw new Error("Este navegador não oferece gravação de áudio.");
       const media = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.current = media;
-      const rec = new MediaRecorder(media);
+      const rec = createAudioRecorder(media);
       recorder.current = rec;
       const chunks: BlobPart[] = [];
       rec.ondataavailable = (e) => {
@@ -90,6 +91,7 @@ export default function AudioPanel() {
       };
       rec.onstop = () => {
         media.getTracks().forEach((t) => t.stop());
+        if (!chunks.length) { setError("A gravacao ficou vazia. Verifique seu microfone."); return; }
         void db.audioNotes
           .add({
             id: crypto.randomUUID(),
@@ -101,7 +103,7 @@ export default function AudioPanel() {
           .then(refresh)
           .catch(() => setError("Não foi possível salvar a gravação."));
       };
-      rec.start();
+      rec.start(250);
       setState("recording");
     } catch (e) {
       setError(

@@ -35,12 +35,18 @@ interface StudyState {
   saveStudyPost: (post: StudyPost) => void;
   mockExams: MockExam[];
   addMockExam: (exam: Omit<MockExam, "id" | "completedAt">) => void;
+  updateMockExam: (
+    id: string,
+    exam: Pick<MockExam, "title" | "total" | "correct">,
+  ) => boolean;
+  removeMockExam: (id: string) => void;
   shortcuts: StudyShortcut[];
   setShortcuts: (shortcuts: StudyShortcut[]) => void;
   goal: Goal;
   subjects: Subject[];
   subjectGroups: SubjectGroup[];
   sessions: StudySession[];
+  addManualSession: (session: Omit<StudySession, "id">) => boolean;
   activities: CalendarActivity[];
   active: ActiveSession | null;
   preferences: Preferences;
@@ -55,6 +61,11 @@ interface StudyState {
   start: (subjectId: string, topic: string) => void;
   togglePause: () => void;
   finish: (summary: string, questions: number, correct: number) => void;
+  updateSession: (
+    id: string,
+    update: Pick<StudySession, "summary" | "questions" | "correct">,
+  ) => void;
+  removeSession: (id: string) => void;
   addActivity: (a: Omit<CalendarActivity, "id">) => void;
   moveActivity: (id: string, date: string) => void;
   removeActivity: (id: string) => void;
@@ -125,6 +136,30 @@ export const useStudyStore = create<StudyState>()(
           ],
         }));
       },
+      updateMockExam: (id, exam) => {
+        if (
+          !exam.title.trim() ||
+          !Number.isSafeInteger(exam.total) ||
+          exam.total < 1 ||
+          !Number.isSafeInteger(exam.correct) ||
+          exam.correct < 0 ||
+          exam.correct > exam.total
+        )
+          return false;
+        let updated = false;
+        set((state) => ({
+          mockExams: state.mockExams.map((current) => {
+            if (current.id !== id) return current;
+            updated = true;
+            return { ...current, ...exam };
+          }),
+        }));
+        return updated;
+      },
+      removeMockExam: (id) =>
+        set((state) => ({
+          mockExams: state.mockExams.filter((exam) => exam.id !== id),
+        })),
       shortcuts: defaultShortcuts,
       setShortcuts: (shortcuts) => set({ shortcuts }),
       goal: {
@@ -139,6 +174,34 @@ export const useStudyStore = create<StudyState>()(
       subjects: initialSubjects,
       subjectGroups: defaultSubjectGroups,
       sessions: [],
+      addManualSession: (session) => {
+        if (
+          !get().subjects.some((subject) => subject.id === session.subjectId) ||
+          !session.summary.trim() ||
+          !Number.isSafeInteger(session.duration) ||
+          session.duration <= 0 ||
+          session.duration > 86400 ||
+          !Number.isFinite(session.startedAt) ||
+          !Number.isFinite(session.endedAt) ||
+          session.endedAt! > Date.now() ||
+          session.endedAt! <= session.startedAt ||
+          session.endedAt! - session.startedAt !== session.duration * 1000 ||
+          session.date !== dateKey(new Date(session.startedAt)) ||
+          !Number.isSafeInteger(session.questions) ||
+          !Number.isSafeInteger(session.correct) ||
+          session.questions < 0 ||
+          session.correct < 0 ||
+          session.correct > session.questions
+        )
+          return false;
+        set((state) => ({
+          sessions: [
+            ...state.sessions,
+            { ...session, id: crypto.randomUUID() },
+          ],
+        }));
+        return true;
+      },
       activities: [],
       active: null,
       notes: {},
@@ -233,6 +296,16 @@ export const useStudyStore = create<StudyState>()(
           ],
         }));
       },
+      updateSession: (id, update) =>
+        set((state) => ({
+          sessions: state.sessions.map((session) =>
+            session.id === id ? { ...session, ...update } : session,
+          ),
+        })),
+      removeSession: (id) =>
+        set((state) => ({
+          sessions: state.sessions.filter((session) => session.id !== id),
+        })),
       addActivity: (a) =>
         set((s) => ({
           activities: [...s.activities, { ...a, id: crypto.randomUUID() }],

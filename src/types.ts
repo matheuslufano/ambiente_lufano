@@ -98,6 +98,7 @@ export interface Flashcard {
   interval: number;
 }
 export interface AudioNote {
+  sessionStartedAt?: number;
   id: string;
   title: string;
   subjectId: string;
@@ -111,7 +112,15 @@ export interface Preferences {
   reduceMotion: boolean;
   wallpaper: "desk" | "sage" | "sand" | "blue";
   focusMinutes: number;
+  levelGoals?: LevelGoals;
+  profileFrame?: ProfileFrame;
 }
+export interface LevelGoals {
+  questions: number;
+  studyHours: number;
+  exams: number;
+}
+export type ProfileFrame = `level-${number}`;
 export type VisualAssetKind = "avatar" | "wallpaper" | "emblem";
 export interface VisualAsset {
   id: VisualAssetKind;

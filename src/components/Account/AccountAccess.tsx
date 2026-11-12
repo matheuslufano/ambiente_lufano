@@ -4,6 +4,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../lib/supabase";
 import { GlassButton, GlassModal } from "../Glass/Glass";
 import styles from "./AccountAccess.module.css";
+import { syncStudyWorkspace, useStudySyncStatus } from "../../services/studySyncService";
 export type AccountMode = "login" | "signup" | "reset";
 export function useAccountSession() {
   const [session, setSession] = useState<Session | null>(null),
@@ -47,6 +48,7 @@ export default function AccountAccess({
   idPrefix?: string;
 }) {
   const { session, loading } = useAccountSession();
+  const syncStatus = useStudySyncStatus();
   const [current, setCurrent] = useState<AccountMode>(mode),
     [pending, setPending] = useState(false),
     [message, setMessage] = useState("");
@@ -81,7 +83,7 @@ export default function AccountAccess({
         result.error
           ? result.error.message
           : current === "login"
-            ? "Você entrou na sua conta. Seus estudos continuam salvos neste dispositivo."
+            ? "Você entrou na sua conta. A sincronização dos estudos foi iniciada."
             : current === "signup"
               ? "Conta criada. Verifique seu e-mail para confirmar o cadastro."
               : "Enviamos um link de recuperação para seu e-mail.",
@@ -131,10 +133,12 @@ export default function AccountAccess({
               <small>{session.user.email}</small>
             </div>
           </div>
-          <p>
-            A sincronização e a separação dos estudos por conta ainda não foram
-            ativadas. Seus dados permanecem neste dispositivo.
-          </p>
+          <p id={`${idPrefix}-sync-status`} role="status">{syncStatus.message}</p>
+          <p>Áudios, imagens e PET permanecem locais neste dispositivo.</p>
+          <GlassButton id={`${idPrefix}-sync-now`} disabled={syncStatus.busy}
+            onClick={() => void syncStudyWorkspace()}>
+            <LogIn size={15} /> Sincronizar agora
+          </GlassButton>
           <GlassButton
             id={`${idPrefix}-sign-out`}
             onClick={async () => {

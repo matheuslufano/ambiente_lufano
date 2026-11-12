@@ -1,0 +1,7 @@
+.records { min-height: 0; overflow-y: auto; height: 100%; padding: 0 8px 30px 42px; overscroll-behavior: contain; color: #303b32; }
+.records > h3 { font-weight: 800; font-size: 20px; margin: 0 0 20px; line-height: 1.4; }
+.dateGroup { margin-top: 20px; border-top: 1px solid var(--separator); }
+.dateGroup article { margin: 16px 0; padding: 14px; border: 1px solid #b8c5b7; border-radius: 10px; background: #fffefaf2; box-shadow: 0 2px 5px #2633210a; }
+.dateGroup small { display: block; color: var(--muted); margin-top: 5px; }
+.dateGroup p { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 700px) { .records { padding-left: 36px; } .dateGroup article { padding: 10px; } }

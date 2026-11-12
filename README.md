@@ -1,5 +1,13 @@
 # Espaço de Estudo Lufano
 
+## Registro manual e navegação do caderno
+
+O player expandido dos resumos segue a referência visual de mensagem de voz: fundo verde, velocidade à esquerda, reprodução circular, onda e tempos. O botão de velocidade alterna entre 1×, 1,5×, 2× e 0,75×. A onda é calculada localmente a partir do arquivo salvo; quando a decodificação visual não estiver disponível, uma linha neutra mantém a navegação sem inventar amplitudes. A seta abre as opções de voltar dez segundos, baixar e recolher. Os tempos mostram posição atual e duração real, sem indicadores fictícios de entrega ou leitura.
+
+No modal de uma data do calendário, **Registrar sessão manualmente** permite informar disciplina, assunto, início, duração, resumo e questões/acertos. O registro é salvo na mesma lista de sessões usada pelos relatórios e resumos do caderno, sem interromper um cronômetro ativo. O término deve estar no passado; acertos, duração e data são validados antes de gravar.
+
+O áudio dos resumos expande o próprio círculo em um player com pausa, progresso, velocidade, retorno de dez segundos e download. Recolher pausa a reprodução. Os marcadores laterais ficam limitados à altura do livro, com rolagem para acessar disciplinas adicionais. A seta ao lado do título retorna à estante; a navegação de folhas permanece dentro do livro. As barras externas superior e inferior foram removidas para ampliar a área de leitura.
+
 Aplicação React + Vite + TypeScript. Primeira entrega das fases de design system, dashboard e ilha dinâmica, com ferramentas locais adicionais. Não representa a conclusão das sete fases do produto.
 
 ## Executar
@@ -26,7 +34,7 @@ Cada folha de anotações possui uma lixeira no canto superior direito. Ao exclu
 
 As folhas ficam acima dos marcadores na ordem de camadas, cobrindo qualquer parte que entre na área do papel. As pontas externas continuam visíveis e clicáveis, inclusive durante a expansão dos nomes.
 
-O caderno aberto na segunda coluna tem um marcador vermelho do sumário à esquerda e uma aba colorida por matéria à direita. As abas ficam presas à borda externa das folhas, sem área de rolagem, e se expandem para fora da coluna ao passar o mouse ou receber foco pelo teclado. A largura expandida acompanha o nome completo do caderno, em uma linha, com espaço para a ponta da seta. `NotebooksPanel.module.css` concentra os estilos dos marcadores; `.centerToolPage`, em `App.module.css`, permite a sobreposição sobre as colunas vizinhas. As transições respeitam a preferência por movimento reduzido.
+O caderno aberto na segunda coluna tem um marcador vermelho do sumário à esquerda e uma aba colorida por matéria à direita. As abas ficam presas à borda externa das folhas e somente a aba apontada ou focada se expande, sempre para fora: sumário à esquerda e disciplinas à direita. A coluna permanece limitada à altura do livro, com rolagem vertical sem barra visível para acessar matérias adicionais. Nomes muito longos recebem reticências no limite da expansão; o nome completo permanece no título e no rótulo acessível. `NotebooksPanel.module.css` concentra os estilos dos marcadores; `.centerToolPage`, em `App.module.css`, permite a sobreposição sobre as colunas vizinhas. As transições respeitam a preferência por movimento reduzido.
 
 ## Modal de configuração do objetivo
 
@@ -224,3 +232,17 @@ A barra inferior usa ícones escuros sobre fundo cinza: iniciar, microfone, toma
 
 O cabeçalho mostra Entrar e Criar conta quando não há sessão autenticada, ou o e-mail conectado e Sair quando existe uma sessão Supabase. O formulário compartilhado com Configurações oferece login por e-mail, cadastro, login do Google e recuperação de senha. Para ativar, configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`; sem essa configuração, o modal explica que a conta online está indisponível. O login ainda não sincroniza nem separa os estudos locais por usuário.
 # ambiente_lufano
+
+
+## Registros das sessoes nos cadernos
+
+A folha 2 de cada caderno agrupa resumos e audios por data, com rolagem propria. O sumario oferece acesso direto; as notas existentes passam para a folha 3, preservando as chaves salvas. A folha de registros nao pode ser excluida.
+
+Novas gravacoes armazenam sessionStartedAt para acompanhar a sessao. Audios antigos aparecem na data de gravacao, sem atribuir uma sessao por suposicao. Os arquivos permanecem no IndexedDB local. O player mantem uma URL estavel, permite download e informa falhas de reproducao.
+
+
+### Player e gravacao dos resumos
+
+A pagina de registros respeita a margem vermelha, destaca o titulo em negrito e separa as sessoes em cartoes. O icone de som expande o player com pausa, busca, velocidade de 0,75x a 2x, retorno de dez segundos e download. Recolher pausa a reproducao.
+
+Ao salvar a sessao, o aplicativo aguarda o evento final do gravador antes de persistir o Blob. Falhas aparecem dentro do modal e preservam o audio para uma nova tentativa. O codec e escolhido entre os formatos suportados pelo navegador. Arquivos antigos vazios ou ausentes nao podem ser recuperados por esta correcao.

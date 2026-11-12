@@ -1,4 +1,5 @@
 .panel {
+  container-type: inline-size;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -26,19 +27,70 @@
 }
 .profile {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 8px;
+}
+.avatarFrame {
+  position: relative;
+  display: grid;
+  width: clamp(96px, 8vw, 116px);
+  aspect-ratio: 1;
+  place-items: center;
+  margin: 0 auto 5px;
+  border-radius: 50%;
+  background: transparent;
+  animation: profile-float 4s ease-in-out infinite;
+  filter: drop-shadow(0 5px 8px #10182050);
+}
+.avatarFrame::before {
+  position: absolute;
+  z-index: 0;
+  inset: 8%;
+  border: 1px solid #d5f7ff70;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  animation: profile-glow 2.8s ease-in-out infinite alternate;
+}
+.avatarFrameArtwork {
+  position: absolute;
+  z-index: 2;
+  top: -45%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+}
+.avatarLevel {
+  position: absolute;
+  z-index: 4;
+  right: -9px;
+  bottom: 1px;
+  padding: 3px 6px;
+  border: 1px solid #ffffffa0;
+  border-radius: 10px;
+  background: #303f4b;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 5px #0004;
 }
 .avatar {
-  height: clamp(120px, 10vw, 180px);
-  width: clamp(120px, 10vw, 180px);
+  position: absolute;
+  z-index: 1;
+  top: 10%;
+  left: 10%;
+  height: 80%;
+  width: 80%;
   border-radius: 50%;
-  border: 5px solid #ffffff;
-  outline: 1px solid #c1c9b9;
+  border: 0;
   background: linear-gradient(140deg, #b4bfa3, #748969);
   color: white;
   font-family: Georgia, serif;
   font-size: 28px;
-  box-shadow: 0 5px 20px #33442a15;
+  box-shadow: none;
   cursor: pointer;
   overflow: hidden;
   padding: 0;
@@ -49,10 +101,37 @@
   object-fit: cover;
   display: block;
 }
+@keyframes profile-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes profile-glow {
+  from {
+    box-shadow:
+      0 0 8px #7ce9ff45,
+      inset 0 0 10px #7ce9ff20;
+  }
+  to {
+    box-shadow:
+      0 0 20px #7ce9ffb0,
+      inset 0 0 18px #7ce9ff50;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatarFrame,
+  .avatarFrame::before {
+    animation: none;
+  }
+}
 .profile h2 {
   font-size: 18px;
   letter-spacing: -0.4px;
-  margin: 14px 0 4px;
+  margin: 6px 0 3px;
 }
 .profile p {
   font-size: 13px;
@@ -72,30 +151,42 @@
 }
 .metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin: 20px 0 15px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 9px 0 7px;
   padding: 0;
-  gap: 10px;
+  gap: 6px;
 }
-.metrics > div {
+.metrics > button {
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
+  padding: 4px 2px;
+  border: 0;
+  color: var(--text);
   background: var(--control);
   border-radius: 9px;
-  border: 1px solid var(--glass-border);
-  padding: 6px 4px;
+  cursor: pointer;
+  font: inherit;
 }
-.metrics > div:nth-child(2) {
-  border: 2px solid #0866ff;
+.metrics > button[aria-pressed="true"] {
+  background: var(--inset);
+  box-shadow: inset 0 -2px 0 #0866ff;
+}
+.metrics > button:hover {
+  background: var(--inset);
+}
+.metrics > button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .metrics svg {
   color: var(--muted);
   margin-bottom: 2px;
 }
 .metrics strong {
-  font-size: 21px;
+  font-size: 16px;
   letter-spacing: -0.8px;
   font-weight: 600;
 }
@@ -123,9 +214,14 @@
   color: var(--accent);
 }
 .chart {
-  height: 260px;
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 300px;
+  min-height: 300px;
+  max-height: none;
   position: relative;
-  margin-top: 13px;
+  overflow: hidden;
+  margin: 0;
 }
 .chartCenter {
   position: absolute;
@@ -149,6 +245,25 @@
 }
 .chartCenter > small {
   font-size: 8px;
+  color: var(--muted);
+}
+.chartTooltip {
+  display: grid;
+  min-width: 150px;
+  gap: 4px;
+  padding: 9px 11px;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 5px 16px #13201f24;
+  font-size: 10px;
+}
+.chartTooltip strong {
+  margin-bottom: 2px;
+  font-size: 11px;
+}
+.chartTooltip span {
   color: var(--muted);
 }
 .chartLegend {
@@ -277,6 +392,7 @@
   display: flex;
   gap: 8px;
   font-size: 9px;
+  flex-shrink: 0;
 }
 .chartGrouping label {
   flex: 1;
@@ -288,16 +404,13 @@
   margin: 0;
 }
 .chartGrouping small {
-  display: block;
-  color: var(--muted);
-  font-size: 7px;
-  margin-top: 2px;
+  display: none;
 }
 .chartYear {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 16px 0 0;
+  margin: 6px 0 0;
   font-size: 13px;
 }
 .chartYear button {
@@ -306,11 +419,197 @@
   height: 25px;
   box-shadow: 0 1px 5px #0002;
 }
+.chartPeriodHeading {
+  justify-content: center;
+  text-align: center;
+}
 .chartDetails {
   font-size: 9px;
-  margin-top: 8px;
+  margin-top: 0;
+  flex-shrink: 0;
 }
 .chartDetails summary {
   cursor: pointer;
   color: var(--muted);
+}
+.performanceCharts {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+  gap: 8px;
+  box-sizing: border-box;
+}
+.performanceCharts > .form-hint {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.2;
+}
+.performanceCharts :global(#chart-period) {
+  width: 100%;
+  min-width: 0;
+  gap: 0;
+  padding: 2px;
+}
+.performanceCharts :global(#chart-period) button {
+  min-width: 0;
+  padding: 4px 2px;
+  font-size: 9px;
+}
+.levelDialog {
+  display: grid;
+  gap: 18px;
+}
+.levelGoalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.levelGoalGrid label {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+.levelGoalGrid input {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  padding: 6px 8px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text);
+  font: inherit;
+  box-sizing: border-box;
+}
+.levelFrameGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.levelFrameChoice {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid var(--separator);
+  border-radius: 8px;
+  background: var(--control);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.levelFrameChoice[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.levelFrameChoice:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+.levelFramePreview {
+  position: relative;
+  display: block;
+  width: 72px;
+  flex: 0 0 72px;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  overflow: visible;
+}
+.levelFramePreview > span {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  display: grid;
+  width: 80%;
+  height: 80%;
+  place-items: center;
+  border-radius: 50%;
+  background: #d9e3e6;
+  color: #303c42;
+  box-shadow: inset 0 0 0 1px #ffffff;
+}
+.levelFramePreview > img {
+  position: absolute;
+  z-index: 1;
+  top: -45%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+}
+.levelFramePreview[data-rank="level-1"] > span {
+  color: #fff;
+  background: #38424a;
+}
+.levelFrameInfo {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.levelFrameInfo strong {
+  font-size: 12px;
+}
+.levelFrameInfo small {
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.3;
+}
+.profileFrameSource {
+  width: fit-content;
+  color: var(--accent);
+  font-size: 10px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.levelGoalProgress {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.levelGoalProgress progress {
+  width: 100%;
+  height: 5px;
+  appearance: none;
+  border: 0;
+  border-radius: 5px;
+}
+.levelGoalProgress progress::-webkit-progress-bar {
+  background: var(--separator);
+  border-radius: 5px;
+}
+.levelGoalProgress progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: 5px;
+}
+.levelGoalProgress progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: 5px;
+}
+.levelDialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+@media (max-width: 460px) {
+  .levelGoalGrid {
+    grid-template-columns: 1fr;
+  }
+  .levelFrameGrid {
+    grid-template-columns: 1fr;
+  }
 }

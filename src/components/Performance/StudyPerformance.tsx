@@ -1,209 +1,368 @@
 import { useEffect, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  Headphones,
-  Pause,
-  Play,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { useStudyStore } from "../../store/useStudyStore";
 import { GlassIconButton, GlassSegmentedControl } from "../Glass/Glass";
+import {
+  buildStudyChartData,
+  type StudyChartPeriod,
+} from "../../lib/studyChartData";
+import type { ProfileMetric } from "./ProfileSummary";
 import styles from "./PerformancePanel.module.css";
+
+const chartPalette = [
+  "#2878b5",
+  "#e07a36",
+  "#4b9b70",
+  "#bd4f68",
+  "#8064a2",
+  "#b28b24",
+  "#248f94",
+  "#d05c32",
+  "#5874c2",
+  "#8c733f",
+  "#3e8b56",
+  "#b24f9b",
+  "#68747d",
+];
+
 export default function StudyPerformance({
   subjectId = "",
   mode = "time",
+  activeMetric,
+  initialGrouping = "subjects",
 }: {
   subjectId?: string;
   mode?: "time" | "performance";
+  activeMetric?: ProfileMetric;
+  initialGrouping?: "subjects" | "topics";
 }) {
-  const { preferences, sessions: allSessions, subjects } = useStudyStore();
+  const { sessions: allSessions, subjects, mockExams } = useStudyStore();
   const sessions = allSessions.filter(
     (session) => !subjectId || session.subjectId === subjectId,
   );
-  const [period, setPeriod] = useState("year");
+  const [period, setPeriod] = useState<StudyChartPeriod>("month");
   const [metric, setMetric] = useState(
-    mode === "performance" ? "questions" : "time",
+    activeMetric ?? (mode === "performance" ? "questions" : "time"),
   );
   useEffect(
-    () => setMetric(mode === "performance" ? "questions" : "time"),
-    [mode],
+    () =>
+      setMetric(
+        activeMetric ?? (mode === "performance" ? "questions" : "time"),
+      ),
+    [activeMetric, mode],
   );
   const [year, setYear] = useState(new Date().getFullYear());
-  const [grouping, setGrouping] = useState("subjects");
-  const [playing, setPlaying] = useState(false);
-  const [file, setFile] = useState<string | null>(null);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
-  const [volume, setVolume] = useState(0.5);
-  useEffect(
-    () => () => {
-      if (audio) {
-        audio.pause();
-        URL.revokeObjectURL(audio.src);
-      }
-    },
-    [audio],
-  );
-  const filtered = useMemo(
+  const [grouping, setGrouping] = useState(initialGrouping);
+  const chartData = useMemo(
     () =>
-      sessions.filter((s) => {
-        const d = new Date(s.startedAt);
-        const now = new Date();
-        if (period === "total") return true;
-        if (period === "day") return d.toDateString() === now.toDateString();
-        if (period === "month")
-          return (
-            d.getMonth() === now.getMonth() &&
-            d.getFullYear() === now.getFullYear()
-          );
-        if (period === "year") return d.getFullYear() === year;
-        return s.startedAt >= Date.now() - 7 * 86400000;
+      buildStudyChartData(sessions, subjects, {
+        period,
+        year,
+        metric: metric === "time" ? "time" : "questions",
+        grouping,
       }),
-    [sessions, period, year],
+    [sessions, subjects, period, year, metric, grouping],
   );
-  const data =
-    grouping === "subjects"
-      ? subjects
-          .map((subject) => ({
-            name: subject.name,
-            value: filtered
-              .filter((s) => s.subjectId === subject.id)
-              .reduce(
-                (sum, s) =>
-                  sum + (metric === "time" ? s.duration : s.questions),
-                0,
-              ),
-            color: subject.color,
-          }))
-          .filter((d) => d.value > 0)
-      : [...new Set(filtered.map((s) => s.topic))]
-          .map((topic, i) => ({
-            name: topic,
-            value: filtered
-              .filter((s) => s.topic === topic)
-              .reduce(
-                (sum, s) =>
-                  sum + (metric === "time" ? s.duration : s.questions),
-                0,
-              ),
-            color:
-              subjects[i % Math.max(1, subjects.length)]?.color || "#552088",
-          }))
-          .filter((d) => d.value > 0);
-  const total = data.reduce((a, d) => a + d.value, 0);
+  const now = new Date();
+  const periodStart = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 6,
+  );
+  const examData = mockExams
+    .filter((exam) => {
+      const date = new Date(exam.completedAt);
+      if (period === "total") return true;
+      if (period === "day") return date.toDateString() === now.toDateString();
+      if (period === "week") return date >= periodStart && date <= now;
+      if (period === "month")
+        return (
+          date.getMonth() === now.getMonth() &&
+          date.getFullYear() === now.getFullYear()
+        );
+      return date.getFullYear() === year;
+    })
+    .slice()
+    .sort((left, right) => left.completedAt - right.completedAt)
+    .map((exam, index) => ({
+      id: exam.id,
+      name: new Date(exam.completedAt).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+      }),
+      title: exam.title,
+      value: Math.round((exam.correct / exam.total) * 100),
+      questions: exam.total,
+      correct: exam.correct,
+      incorrect: exam.total - exam.correct,
+      color: chartPalette[index % chartPalette.length],
+    }));
+  const periodTitle =
+    period === "day"
+      ? now.toLocaleDateString("pt-BR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : period === "week"
+        ? `${periodStart.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}–${now.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}`
+        : period === "month"
+          ? now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+          : period === "year"
+            ? String(year)
+            : "Todo o período";
+  const total = metric === "exams" ? examData.length : chartData.total;
+  const attemptedQuestions =
+    sessions.reduce((sum, session) => sum + session.questions, 0) +
+    mockExams.reduce((sum, exam) => sum + exam.total, 0);
+  const correctQuestions =
+    sessions.reduce((sum, session) => sum + session.correct, 0) +
+    mockExams.reduce((sum, exam) => sum + exam.correct, 0);
+  const pieData = chartData.series
+    .map((item) => ({
+      ...item,
+      value: chartData.rows.reduce(
+        (sum, row) => sum + Number(row[item.id] || 0),
+        0,
+      ),
+    }))
+    .filter((item) => item.value > 0);
   return (
-    <div id="study-performance-charts">
-      {mode === "performance" && (
+    <div id="study-performance-charts" className={styles.performanceCharts}>
+      {mode === "performance" && metric === "questions" && (
         <p className="form-hint">
           Aproveitamento:{" "}
-          {sessions.reduce((sum, s) => sum + s.questions, 0)
-            ? Math.round(
-                (sessions.reduce((sum, s) => sum + s.correct, 0) /
-                  sessions.reduce((sum, s) => sum + s.questions, 0)) *
-                  100,
-              )
+          {attemptedQuestions
+            ? Math.round((correctQuestions / attemptedQuestions) * 100)
             : 0}
-          % · {sessions.reduce((sum, s) => sum + s.correct, 0)} acertos em{" "}
-          {sessions.reduce((sum, s) => sum + s.questions, 0)} questões.
+          % · {correctQuestions} acertos em {attemptedQuestions} questões.
         </p>
       )}
-      <div className={styles.chartGrouping}>
-        <label>
-          <input
-            type="radio"
-            name="chart-grouping"
-            checked={grouping === "subjects"}
-            onChange={() => setGrouping("subjects")}
-          />{" "}
-          Mat?rias<small>Veja a dura??o agrupada por mat?rias</small>
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="chart-grouping"
-            checked={grouping === "topics"}
-            onChange={() => setGrouping("topics")}
-          />{" "}
-          Conte?dos<small>Veja a dura??o agrupada por t?picos</small>
-        </label>
-      </div>
-      <div className={styles.chartYear}>
-        <GlassIconButton
-          id="chart-previous-year"
-          aria-label="Ano anterior"
-          onClick={() => {
-            setYear(year - 1);
-            setPeriod("year");
-          }}
-        >
-          <ChevronLeft size={16} />
-        </GlassIconButton>
-        <strong>{year}</strong>
-        <GlassIconButton
-          id="chart-next-year"
-          aria-label="Pr?ximo ano"
-          onClick={() => {
-            setYear(year + 1);
-            setPeriod("year");
-          }}
-        >
-          <ChevronRight size={16} />
-        </GlassIconButton>
+      {metric !== "exams" && (
+        <div className={styles.chartGrouping}>
+          <label>
+            <input
+              type="radio"
+              name="chart-grouping"
+              checked={grouping === "subjects"}
+              onChange={() => setGrouping("subjects")}
+            />{" "}
+            Matérias<small>Veja a duração agrupada por matérias</small>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="chart-grouping"
+              checked={grouping === "topics"}
+              onChange={() => setGrouping("topics")}
+            />{" "}
+            Conteúdos<small>Veja a duração agrupada por tópicos</small>
+          </label>
+        </div>
+      )}
+      <div
+        className={`${styles.chartYear} ${period !== "year" ? styles.chartPeriodHeading : ""}`}
+      >
+        {period === "year" && (
+          <GlassIconButton
+            id="chart-previous-year"
+            aria-label="Ano anterior"
+            onClick={() => setYear((value) => value - 1)}
+          >
+            <ChevronLeft size={16} />
+          </GlassIconButton>
+        )}
+        <strong>
+          {metric === "exams" ? `Simulados · ${periodTitle}` : periodTitle}
+        </strong>
+        {period === "year" && (
+          <GlassIconButton
+            id="chart-next-year"
+            aria-label="Próximo ano"
+            onClick={() => setYear((value) => value + 1)}
+          >
+            <ChevronRight size={16} />
+          </GlassIconButton>
+        )}
       </div>
       <div className={styles.chart}>
-        <ResponsiveContainer width="100%" height={260}>
-          <PieChart>
-            <Pie
-              data={
-                total
-                  ? data
-                  : [
-                      {
-                        name: "Sem registros",
-                        value: 1,
-                        color: "var(--chart-empty)",
-                      },
-                    ]
-              }
-              innerRadius={0}
-              outerRadius={112}
-              paddingAngle={0}
-              cornerRadius={0}
-              dataKey="value"
-              stroke="none"
-              startAngle={90}
-              endAngle={-270}
+        {metric === "exams" ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={examData}
+              margin={{ top: 10, right: 8, bottom: 4, left: 0 }}
             >
-              {(total ? data : [{ color: "var(--chart-empty)" }]).map(
-                (entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ),
-              )}
-            </Pie>
-            {total > 0 && (
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+              <YAxis
+                domain={[0, 100]}
+                tick={{ fontSize: 9 }}
+                tickFormatter={(value) => `${value}%`}
+                width={34}
+              />
               <Tooltip
-                formatter={(v) =>
-                  metric === "time"
-                    ? `${Math.round(Number(v) / 60)} min`
-                    : `${v} questões`
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  const exam = payload[0].payload as (typeof examData)[number];
+                  return (
+                    <div className={styles.chartTooltip}>
+                      <strong>{exam.title || label}</strong>
+                      <span>{exam.questions} questões feitas</span>
+                      <span>{exam.correct} acertadas</span>
+                      <span>{exam.incorrect} erradas</span>
+                      <span>{exam.value}% de aproveitamento</span>
+                    </div>
+                  );
+                }}
+              />
+              <Bar dataKey="value" name="Aproveitamento" radius={[4, 4, 0, 0]}>
+                {examData.map((entry) => (
+                  <Cell key={entry.id} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        ) : metric === "time" ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={
+                  pieData.length
+                    ? pieData
+                    : [
+                        {
+                          name: "Sem registros",
+                          value: 1,
+                          color: "var(--chart-empty)",
+                        },
+                      ]
+                }
+                dataKey="value"
+                nameKey="name"
+                outerRadius="90%"
+                stroke="none"
+              >
+                {(pieData.length
+                  ? pieData
+                  : [{ id: "empty", color: "var(--chart-empty)" }]
+                ).map((entry) => (
+                  <Cell key={entry.id} fill={entry.color} />
+                ))}
+              </Pie>
+              {pieData.length > 0 && (
+                <Tooltip
+                  formatter={(value, name) => [
+                    `${Math.round(Number(value))} min`,
+                    name,
+                  ]}
+                />
+              )}
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData.rows}
+              margin={{ top: 10, right: 8, bottom: 4, left: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 9 }}
+                interval={
+                  period === "day"
+                    ? 2
+                    : period === "week" || period === "month"
+                      ? 1
+                      : 0
                 }
               />
-            )}
-          </PieChart>
-        </ResponsiveContainer>
+              <YAxis
+                tick={{ fontSize: 9 }}
+                tickFormatter={(value) => String(value)}
+                width={36}
+              />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  const stats = payload.reduce(
+                    (totalStats, entry) => {
+                      const row =
+                        entry.payload as (typeof chartData.rows)[number];
+                      const seriesId = String(entry.dataKey || "");
+                      const seriesStats = row.questionStatsBySeries[seriesId];
+                      if (!seriesStats) return totalStats;
+                      return {
+                        attempted: totalStats.attempted + seriesStats.attempted,
+                        correct: totalStats.correct + seriesStats.correct,
+                        incorrect: totalStats.incorrect + seriesStats.incorrect,
+                      };
+                    },
+                    { attempted: 0, correct: 0, incorrect: 0 },
+                  );
+                  return (
+                    <div className={styles.chartTooltip}>
+                      <strong>{label}</strong>
+                      <span>{stats.attempted} questões feitas</span>
+                      <span>{stats.correct} acertadas</span>
+                      <span>{stats.incorrect} erradas</span>
+                    </div>
+                  );
+                }}
+              />
+              {chartData.series.map((item) => (
+                <Bar
+                  key={item.id}
+                  dataKey={item.id}
+                  name={item.name}
+                  stackId="study"
+                  fill={item.color}
+                  maxBarSize={28}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        )}
         {!total && (
           <div className={styles.chartCenter}>
             <span>
-              {metric === "time"
-                ? `${(total / 3600).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}`
-                : total}
+              {metric === "exams"
+                ? 0
+                : metric === "time"
+                  ? `${(total / 3600).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}`
+                  : total}
               <small>{metric === "time" ? "h" : ""}</small>
             </span>
-            <small>{total ? "bem investidas" : "seu ponto de partida"}</small>
+            <small>
+              {metric === "exams"
+                ? "nenhum simulado neste período"
+                : `sem registros · ${periodTitle}`}
+            </small>
           </div>
         )}
       </div>
+      {metric !== "exams" && (
+        <div className={styles.chartLegend} aria-label="Séries do gráfico">
+          {(metric === "time" ? pieData : chartData.series).map((item) => (
+            <div key={item.id}>
+              <i style={{ background: item.color }} />
+              <span>{item.name}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <GlassSegmentedControl
         id="chart-period"
         value={period}
@@ -216,123 +375,6 @@ export default function StudyPerformance({
           { value: "total", label: "Total" },
         ]}
       />
-      <details className={styles.chartDetails}>
-        <summary>Filtros, meta e m?sica</summary>
-        <GlassSegmentedControl
-          id="chart-metric"
-          value={metric}
-          onChange={setMetric}
-          options={[
-            { value: "time", label: "Tempo de estudo" },
-            { value: "questions", label: "Quest?es" },
-          ]}
-        />
-        <div className={styles.dailyGoal}>
-          <div>
-            <span>Meta de hoje</span>
-            <strong>
-              {Math.min(
-                100,
-                Math.round(
-                  (sessions
-                    .filter(
-                      (s) =>
-                        new Date(s.startedAt).toDateString() ===
-                        new Date().toDateString(),
-                    )
-                    .reduce((a, s) => a + s.duration, 0) /
-                    (preferences.dailyHours * 3600)) *
-                    100,
-                ),
-              )}
-              %
-            </strong>
-          </div>
-          <progress
-            max="100"
-            value={Math.min(
-              100,
-              (sessions
-                .filter(
-                  (s) =>
-                    new Date(s.startedAt).toDateString() ===
-                    new Date().toDateString(),
-                )
-                .reduce((a, s) => a + s.duration, 0) /
-                (preferences.dailyHours * 3600)) *
-                100,
-            )}
-          />
-          <span>Seu compromisso: {preferences.dailyHours}h por dia</span>
-        </div>
-        <div className={styles.music}>
-          <div className={styles.album}>
-            <Headphones size={20} />
-          </div>
-          <div className={styles.trackInfo}>
-            <strong>{file || "Sua trilha de concentração"}</strong>
-            <span>
-              {file
-                ? "Áudio local · neste dispositivo"
-                : "Adicione uma música local"}
-            </span>
-          </div>
-          <label className={styles.upload} title="Selecionar música">
-            <Plus size={16} />
-            <input
-              id="music-upload"
-              type="file"
-              accept="audio/*"
-              onChange={(e) => {
-                const selected = e.target.files?.[0];
-                if (!selected) return;
-                if (audio) {
-                  audio.pause();
-                  URL.revokeObjectURL(audio.src);
-                }
-                const next = new Audio(URL.createObjectURL(selected));
-                next.volume = volume;
-                next.onended = () => setPlaying(false);
-                setAudio(next);
-                setFile(selected.name);
-                setPlaying(false);
-              }}
-            />
-          </label>
-          <GlassIconButton
-            id="music-play"
-            aria-label={playing ? "Pausar música" : "Tocar música"}
-            disabled={!audio}
-            onClick={() => {
-              if (!audio) return;
-              if (playing) {
-                audio.pause();
-                setPlaying(false);
-              } else
-                audio
-                  .play()
-                  .then(() => setPlaying(true))
-                  .catch(() => setPlaying(false));
-            }}
-          >
-            {playing ? <Pause size={15} /> : <Play size={15} />}
-          </GlassIconButton>
-        </div>
-        <input
-          id="music-volume"
-          className={styles.volume}
-          aria-label="Volume da música"
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          value={volume}
-          onChange={(e) => {
-            setVolume(Number(e.target.value));
-            if (audio) audio.volume = Number(e.target.value);
-          }}
-        />
-      </details>
     </div>
   );
 }

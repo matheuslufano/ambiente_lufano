@@ -1,4 +1,6 @@
-import { useState } from "react";
+import SessionAudioPlayer from "../Tools/SessionAudioPlayer";
+import ManualSessionForm from "./ManualSessionForm";
+import { useEffect, useState } from "react";
 import {
   CalendarDays,
   ChevronLeft,
@@ -18,6 +20,8 @@ import {
   GlassSegmentedControl,
 } from "../Glass/Glass";
 import styles from "./StudyCalendar.module.css";
+import { db } from "../../lib/db";
+import type { AudioNote, StudySession } from "../../types";
 type CalendarView = "week" | "month" | "year";
 export default function StudyCalendar() {
   const {
@@ -28,11 +32,21 @@ export default function StudyCalendar() {
     removeActivity,
     moveActivity,
     preferences,
+    updateSession,
+    removeSession,
   } = useStudyStore();
   const [cursor, setCursor] = useState(new Date());
   const [view, setView] = useState<CalendarView>("month");
   const [selected, setSelected] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [manual, setManual] = useState(false);
+  const [editingSession, setEditingSession] = useState<StudySession | null>(
+    null,
+  );
+  const [sessionAudioNotes, setSessionAudioNotes] = useState<AudioNote[]>([]);
+  useEffect(() => {
+    void db.audioNotes.toArray().then(setSessionAudioNotes);
+  }, [selected]);
   const today = dateKey(new Date());
   const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
   const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0);
@@ -162,8 +176,15 @@ export default function StudyCalendar() {
                     if (activities.some((a) => a.id === id))
                       moveActivity(id, key);
                   }}
+                  onClick={(event) => {
+                    if (event.target === event.currentTarget) {
+                      setSelected(key);
+                      setAdding(false);
+                    }
+                  }}
                 >
                   <button
+                    id={`calendar-date-hit-area-${key}`}
                     aria-label={`${date.toLocaleDateString("pt-BR")}, ${dayActivities.length} atividades, ${daySessions.length} sessões`}
                     onClick={() => {
                       setSelected(key);
@@ -273,8 +294,28 @@ export default function StudyCalendar() {
         })}
         description="Planejamento e registros do seu dia. Arraste atividades no calendário para reagendar."
         open={!!selected}
-        onClose={() => setSelected(null)}
+        onClose={() => {
+          setSelected(null);
+          setManual(false);
+        }}
       >
+        {manual && selected ? (
+          <ManualSessionForm
+            key={selected}
+            date={selected}
+            onClose={() => setManual(false)}
+          />
+        ) : (
+          <GlassButton
+            id="calendar-register-session"
+            onClick={() => {
+              setManual(true);
+              setAdding(false);
+            }}
+          >
+            <Plus size={15} /> Registrar sessão manualmente
+          </GlassButton>
+        )}
         <div className={styles.dayTimeline}>
           {activities
             .filter((a) => a.date === selected)
@@ -315,6 +356,22 @@ export default function StudyCalendar() {
                     {s.correct}/{s.questions} questões corretas · {s.summary}
                   </span>
                 </div>
+                <GlassIconButton
+                  id={`session-edit-${s.id}`}
+                  aria-label="Editar sessão"
+                  onClick={() => setEditingSession(s)}
+                >
+                  <Clock3 size={14} />
+                </GlassIconButton>
+                <GlassIconButton
+                  id={`session-delete-${s.id}`}
+                  aria-label="Excluir sessão"
+                  onClick={() => {
+                    removeSession(s.id);
+                  }}
+                >
+                  <Trash2 size={14} />
+                </GlassIconButton>
               </div>
             ))}
           {!activities.some((a) => a.date === selected) &&
@@ -386,6 +443,77 @@ export default function StudyCalendar() {
             </GlassButton>
           </form>
         )}
+      </GlassModal>
+      <GlassModal
+        id="calendar-session-edit-modal"
+        title="Corrigir sessão"
+        description="Edite o resumo e os resultados registrados."
+        open={!!editingSession}
+        onClose={() => setEditingSession(null)}
+      >
+        {editingSession && (
+          <form
+            className="form-stack"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const data = new FormData(event.currentTarget);
+              updateSession(editingSession.id, {
+                summary: String(data.get("summary")),
+                questions: Number(data.get("questions")),
+                correct: Number(data.get("correct")),
+              });
+              setEditingSession(null);
+            }}
+          >
+            <label>
+              Resumo
+              <textarea
+                name="summary"
+                defaultValue={editingSession.summary}
+                rows={4}
+                required
+              />
+            </label>
+            <div className="form-row">
+              <label>
+                Questões
+                <input
+                  name="questions"
+                  type="number"
+                  min="0"
+                  defaultValue={editingSession.questions}
+                  required
+                />
+              </label>
+              <label>
+                Acertos
+                <input
+                  name="correct"
+                  type="number"
+                  min="0"
+                  max={editingSession.questions}
+                  defaultValue={editingSession.correct}
+                  required
+                />
+              </label>
+            </div>
+            <GlassButton id="session-edit-save" type="submit" variant="primary">
+              Salvar correções
+            </GlassButton>
+          </form>
+        )}
+        {sessionAudioNotes
+          .filter(
+            (note) =>
+              editingSession &&
+              note.subjectId === editingSession.subjectId &&
+              note.date.startsWith(
+                new Date(editingSession.startedAt).toISOString().slice(0, 10),
+              ),
+          )
+          .map((note) => (
+            <SessionAudioPlayer key={note.id} note={note} />
+          ))}
       </GlassModal>
     </GlassPanel>
   );

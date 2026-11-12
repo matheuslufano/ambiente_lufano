@@ -6,7 +6,6 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   AlignCenter,
   ArrowLeft,
-  ArrowRight,
   Bold,
   BookOpen,
   ChevronLeft,
@@ -14,10 +13,12 @@ import {
   Italic,
   List,
   ListOrdered,
+  Pencil,
   Trash2,
   X,
 } from "lucide-react";
 import { useStudyStore } from "../../store/useStudyStore";
+import NotebookSessionRecords from "./NotebookSessionRecords";
 import { GlassButton, GlassIconButton, GlassModal } from "../Glass/Glass";
 import styles from "./NotebooksPanel.module.css";
 import NotebookPageRemoval from "./NotebookPageRemoval";
@@ -129,7 +130,7 @@ function NotebookEditor({
   onActivate: () => void;
 }) {
   const { notes, saveNote } = useStudyStore();
-  const contentIndex = pageIndex - 1;
+  const contentIndex = pageIndex - 2;
   const noteKey = notebookPageKey(subjectId, contentIndex);
   const titleKey = notebookTitleKey(subjectId, contentIndex);
   const pageTitle = getNotebookPageTitle(notes, subjectId, contentIndex);
@@ -235,11 +236,21 @@ export default function NotebooksPanel({
 }: {
   onClose?: () => void;
 }) {
-  const { subjects, notes, deleteNotebookPage } = useStudyStore();
+  const {
+    subjects,
+    notes,
+    goal,
+    subjectGroups,
+    saveObjective,
+    deleteNotebookPage,
+  } = useStudyStore();
   const [deletingPage, setDeletingPage] = useState<number | null>(null);
   const [pendingDeletion, setPendingDeletion] = useState<number | null>(null);
   const [pageRevision, setPageRevision] = useState(0);
   const [deletionMessage, setDeletionMessage] = useState("");
+  const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const [draftColor, setDraftColor] = useState("#718b65");
   const reduceMotion = useReducedMotion();
   const [selected, setSelected] = useState<string | null>(null);
   const [pageIndex, setPageIndex] = useState(0);
@@ -283,7 +294,7 @@ export default function NotebooksPanel({
   }
 
   function openContentsPage(contentIndex: number) {
-    const targetPageIndex = contentIndex + 1;
+    const targetPageIndex = contentIndex + 2;
     setTurnDirection(targetPageIndex >= pageIndex ? "next" : "previous");
     setActivePageIndex(targetPageIndex);
     setPageIndex(
@@ -293,12 +304,12 @@ export default function NotebooksPanel({
 
   function completePageDeletion() {
     if (deletingPage === null || !selectedSubject) return;
-    deleteNotebookPage(selectedSubject.id, deletingPage - 1);
+    deleteNotebookPage(selectedSubject.id, deletingPage - 2);
     const remaining = getNotebookContentIndexes(
       useStudyStore.getState().notes,
       selectedSubject.id,
     );
-    const lastPage = remaining.length ? remaining[remaining.length - 1] + 1 : 0;
+    const lastPage = remaining.length ? remaining[remaining.length - 1] + 2 : 1;
     setPageIndex((current) =>
       Math.min(current, singlePage ? lastPage : Math.floor(lastPage / 2) * 2),
     );
@@ -320,7 +331,21 @@ export default function NotebooksPanel({
   return (
     <section id="notebooks-tool" className={styles.notebookWorkspace}>
       <header className={styles.notebookHeader}>
-        <div>
+        <div className={styles.notebookHeading}>
+          {selectedSubject && (
+            <GlassIconButton
+              id="notebook-back"
+              aria-label="Voltar aos cadernos"
+              disabled={deletingPage !== null}
+              onClick={() => {
+                setSelected(null);
+                setPageIndex(0);
+                setActivePageIndex(null);
+              }}
+            >
+              <ArrowLeft size={18} />
+            </GlassIconButton>
+          )}
           <h2>{selectedSubject?.name || "Seus cadernos."}</h2>
         </div>
         <GlassIconButton
@@ -333,47 +358,13 @@ export default function NotebooksPanel({
         </GlassIconButton>
       </header>
 
+      {deletionMessage && (
+        <span className={styles.notebookStatus} role="status">
+          {deletionMessage}
+        </span>
+      )}
       {selectedSubject ? (
         <div className={styles.openNotebook}>
-          <div className={styles.openNotebookToolbar}>
-            <GlassButton
-              id="notebook-back"
-              disabled={deletingPage !== null}
-              onClick={() => {
-                setSelected(null);
-                setPageIndex(0);
-                setActivePageIndex(null);
-              }}
-            >
-              <ArrowLeft size={14} /> Todos os cadernos
-            </GlassButton>
-            <div className={styles.pageTurnControls}>
-              <GlassIconButton
-                id="notebook-previous-pages"
-                aria-label="Virar folha para trás"
-                disabled={
-                  pageIndex === 0 || !!pageFlip || deletingPage !== null
-                }
-                onClick={() => turnPages("previous")}
-              >
-                <ChevronLeft size={16} />
-              </GlassIconButton>
-              <span>
-                {singlePage
-                  ? "Folha " + (pageIndex + 1)
-                  : "Folhas " + (pageIndex + 1) + "–" + (pageIndex + 2)}
-              </span>
-              <GlassIconButton
-                id="notebook-next-pages"
-                aria-label="Virar folha para frente"
-                disabled={!!pageFlip || deletingPage !== null}
-                onClick={() => turnPages("next")}
-              >
-                <ChevronRight size={16} />
-              </GlassIconButton>
-            </div>
-          </div>
-
           <div
             className={styles.notebookBookFrame}
             data-single-page={singlePage}
@@ -421,7 +412,7 @@ export default function NotebooksPanel({
                     aria-label={"Folha " + (page + 1)}
                     onClick={() => setActivePageIndex(page)}
                   >
-                    {page > 0 && (
+                    {page > 1 && (
                       <button
                         id={"notebook-delete-page-" + page}
                         className={styles.notebookDeletePage}
@@ -444,11 +435,22 @@ export default function NotebooksPanel({
                           className={styles.notebookContents}
                           aria-label="Sumário do caderno"
                         >
+                          <button
+                            id="notebook-session-contents-link"
+                            type="button"
+                            onClick={() => {
+                              setPageIndex(singlePage ? 1 : 0);
+                              setActivePageIndex(1);
+                            }}
+                          >
+                            <span>Resumos das sessões</span>
+                            <small>2</small>
+                          </button>
                           {contentIndexes.length ? (
                             contentIndexes.map((contentIndex) => (
                               <button
                                 id={
-                                  "notebook-contents-page-" + (contentIndex + 2)
+                                  "notebook-contents-page-" + (contentIndex + 3)
                                 }
                                 key={contentIndex}
                                 type="button"
@@ -464,7 +466,7 @@ export default function NotebooksPanel({
                                     contentIndex,
                                   )}
                                 </span>
-                                <small>{contentIndex + 2}</small>
+                                <small>{contentIndex + 3}</small>
                               </button>
                             ))
                           ) : (
@@ -474,6 +476,8 @@ export default function NotebooksPanel({
                           )}
                         </nav>
                       </>
+                    ) : page === 1 ? (
+                      <NotebookSessionRecords subjectId={selectedSubject.id} />
                     ) : (
                       <NotebookEditor
                         key={selectedSubject.id + "-" + page}
@@ -533,6 +537,7 @@ export default function NotebooksPanel({
                   className={styles.notebookBookmark}
                   data-color={index % 8}
                   data-active={subject.id === selectedSubject.id}
+                  title={subject.name}
                   aria-label={"Abrir caderno de " + subject.name}
                   onClick={() => {
                     if (subject.id === selectedSubject.id) return;
@@ -586,11 +591,13 @@ export default function NotebooksPanel({
                   <strong>
                     {flipPageIndex === 0
                       ? "Sumário"
-                      : getNotebookPageTitle(
-                          notes,
-                          selectedSubject.id,
-                          flipPageIndex - 1,
-                        )}
+                      : flipPageIndex === 1
+                        ? "Resumos das sessões"
+                        : getNotebookPageTitle(
+                            notes,
+                            selectedSubject.id,
+                            flipPageIndex - 2,
+                          )}
                   </strong>
                   <span>{flipPageIndex + 1}</span>
                 </div>
@@ -598,59 +605,66 @@ export default function NotebooksPanel({
                   <strong>
                     {reversePageIndex === 0
                       ? "Sumário"
-                      : getNotebookPageTitle(
-                          notes,
-                          selectedSubject.id,
-                          reversePageIndex - 1,
-                        )}
+                      : reversePageIndex === 1
+                        ? "Resumos das sessões"
+                        : getNotebookPageTitle(
+                            notes,
+                            selectedSubject.id,
+                            reversePageIndex - 2,
+                          )}
                   </strong>
                   <span>{reversePageIndex + 1}</span>
                 </div>
               </motion.div>
             )}
           </div>
-          <footer className={styles.notebookFooter}>
-            <span role="status">
-              {deletionMessage ||
-                "Selecione uma folha para escrever e formatar o texto."}
-            </span>
-            <GlassButton
-              id="notebook-turn-next"
-              variant="primary"
-              disabled={!!pageFlip || deletingPage !== null}
-              onClick={() => turnPages("next")}
-            >
-              {singlePage ? "Próxima folha" : "Virar folha"}{" "}
-              <ArrowRight size={14} />
-            </GlassButton>
-          </footer>
         </div>
       ) : (
         <div className={styles.notebookShelf}>
           {subjects.map((subject) => (
-            <button
+            <article
               id={"notebook-open-" + subject.id}
               key={subject.id}
               className={styles.notebookBook}
-              onClick={() => {
-                setSelected(subject.id);
-                setPageIndex(0);
-                setActivePageIndex(null);
-              }}
               style={
                 { "--notebook-cover": subject.color } as React.CSSProperties
               }
             >
-              <span className={styles.notebookCover}>
-                <BookOpen size={24} />
-                <strong>{subject.name}</strong>
-              </span>
-              <span className={styles.notebookBookCaption}>
-                {hasNotebookContent(notes, subject.id)
-                  ? "Continuar escrevendo"
-                  : "Começar a primeira folha"}
-              </span>
-            </button>
+              <button
+                className={styles.notebookBookOpen}
+                type="button"
+                aria-label={"Abrir caderno de " + subject.name}
+                onClick={() => {
+                  setSelected(subject.id);
+                  setPageIndex(0);
+                  setActivePageIndex(null);
+                }}
+              >
+                <span className={styles.notebookCover}>
+                  <BookOpen size={24} />
+                  <strong>{subject.name}</strong>
+                </span>
+                <span className={styles.notebookBookCaption}>
+                  {hasNotebookContent(notes, subject.id)
+                    ? "Continuar escrevendo"
+                    : "Começar a primeira folha"}
+                </span>
+              </button>
+              <button
+                id={"notebook-edit-" + subject.id}
+                className={styles.notebookEdit}
+                type="button"
+                aria-label={"Renomear ou mudar a cor de " + subject.name}
+                title="Renomear ou mudar a cor"
+                onClick={() => {
+                  setEditingSubjectId(subject.id);
+                  setDraftName(subject.name);
+                  setDraftColor(subject.color);
+                }}
+              >
+                <Pencil size={14} />
+              </button>
+            </article>
           ))}
           {!subjects.length && (
             <div className={styles.notebookEmptyShelf}>
@@ -662,11 +676,73 @@ export default function NotebooksPanel({
         </div>
       )}
       <GlassModal
+        id="notebook-edit-modal"
+        title="Editar caderno"
+        open={editingSubjectId !== null}
+        onClose={() => setEditingSubjectId(null)}
+      >
+        <form
+          className={styles.notebookEditForm}
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!editingSubjectId || !draftName.trim()) return;
+            saveObjective(
+              goal,
+              subjectGroups,
+              subjects.map((subject) =>
+                subject.id === editingSubjectId
+                  ? { ...subject, name: draftName.trim(), color: draftColor }
+                  : subject,
+              ),
+            );
+            setEditingSubjectId(null);
+          }}
+        >
+          <label>
+            Nome do caderno
+            <input
+              id="notebook-edit-name"
+              autoFocus
+              required
+              maxLength={70}
+              value={draftName}
+              onChange={(event) => setDraftName(event.target.value)}
+            />
+          </label>
+          <label className={styles.notebookColorField}>
+            Cor da capa
+            <input
+              id="notebook-edit-color"
+              aria-label="Cor da capa"
+              type="color"
+              value={draftColor}
+              onChange={(event) => setDraftColor(event.target.value)}
+            />
+          </label>
+          <div className={styles.notebookEditActions}>
+            <GlassButton
+              id="notebook-edit-cancel"
+              type="button"
+              onClick={() => setEditingSubjectId(null)}
+            >
+              Cancelar
+            </GlassButton>
+            <GlassButton
+              id="notebook-edit-save"
+              type="submit"
+              variant="primary"
+            >
+              Salvar
+            </GlassButton>
+          </div>
+        </form>
+      </GlassModal>
+      <GlassModal
         id="notebook-delete-confirmation"
         title="Excluir esta folha?"
         description={
           pendingDeletion !== null && selectedSubject
-            ? `A folha ${pendingDeletion + 1}, “${getNotebookPageTitle(notes, selectedSubject.id, pendingDeletion - 1)}”, será excluída. Essa ação não pode ser desfeita.`
+            ? `A folha ${pendingDeletion + 1}, “${getNotebookPageTitle(notes, selectedSubject.id, pendingDeletion - 2)}”, será excluída. Essa ação não pode ser desfeita.`
             : undefined
         }
         open={pendingDeletion !== null}
